@@ -1,0 +1,39 @@
+name: Deploy Imperial Support to Cloudflare
+on:
+  workflow_dispatch:
+    inputs:
+      project_name:
+        description: Free branded address prefix (e.g. tge-support.pages.dev)
+        required: true
+        default: tge-support
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: cloudflare-support-production
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: cloudflare-support
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: cloudflare-support/package-lock.json
+      - run: npm ci
+      - run: npm run check && npm test && npm run build
+      - name: Provision database and publish support portal
+        run: npm run deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SUPPORT_OWNER_EMAIL: ${{ secrets.SUPPORT_OWNER_EMAIL }}
+          SUPPORT_PROJECT_NAME: ${{ inputs.project_name }}
+          CLOUDFLARE_ACCESS_TEAM: ${{ vars.CLOUDFLARE_ACCESS_TEAM }}
+          CLOUDFLARE_ACCESS_AUD: ${{ vars.CLOUDFLARE_ACCESS_AUD }}

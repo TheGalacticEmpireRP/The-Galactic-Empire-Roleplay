@@ -1,0 +1,27 @@
+{
+  "name": "tge-support",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22.12.0" },
+  "scripts": {
+    "check": "tsc --noEmit",
+    "test": "node test/run.mjs",
+    "build": "vite build && vite build --config vite.worker.config.ts && node scripts/finish-build.mjs",
+    "prepare:cloudflare": "node scripts/provision.mjs",
+    "deploy": "node scripts/deploy.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "1.31.0",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "4.20260515.1",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "typescript": "5.9.3",
+    "vite": "8.0.13",
+    "wrangler": "4.92.0"
+  }
+}

@@ -29,3 +29,11 @@ Tickets support up to five HTTPS evidence links and five private PNG/JPEG/WebP s
 The support service's TypeScript check, production build, and 13 automated integration tests pass. Live anonymous checks confirm the portal and session endpoint are available and that the staff queue rejects unauthenticated visitors. All seven homepage support links and their destinations were checked.
 
 Browser visual verification was not available in the authoring environment. A member and staff walkthrough can confirm the appearance and the community's preferred review workflow.
+
+## Free branded hosting migration
+
+The Cloudflare migration package and GitHub deployment workflow are in
+[cloudflare-support](cloudflare-support/README.md). They are prepared for a
+free branded `pages.dev` address. The existing live links above remain active
+until the Cloudflare account is configured and the ticket records are imported
+and verified.

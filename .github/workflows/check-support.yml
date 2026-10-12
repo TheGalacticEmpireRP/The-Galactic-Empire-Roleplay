@@ -1,0 +1,24 @@
+name: Check Imperial Support
+on:
+  push:
+    branches: [main, feature/free-cloudflare-support]
+    paths: ['cloudflare-support/**', '.github/workflows/check-support.yml']
+  pull_request:
+    paths: ['cloudflare-support/**', '.github/workflows/check-support.yml']
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cloudflare-support
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: cloudflare-support/package-lock.json
+      - run: npm ci
+      - run: npm run check && npm test && npm run build
