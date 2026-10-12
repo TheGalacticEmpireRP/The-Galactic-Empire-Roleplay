@@ -1,32 +1,31 @@
-# TGE Support integration
+# TGE Support Center
 
-This change adds **Support** to the website navigation, a four-category support section, and `support.html`, which forwards visitors to the persistent support service.
+The support portal is public and linked from the community website through the Support navigation item, four category cards, and `support.html`.
 
-Support portal: https://tge-support.gonzalezsuarezalejan.chatgpt.site
-Staff console: https://tge-support.gonzalezsuarezalejan.chatgpt.site/staff
+- Support portal: https://tge-support.gonzalezsuarezalejan.chatgpt.site
+- Staff console: https://tge-support.gonzalezsuarezalejan.chatgpt.site/staff
 
-## Launch sequence
+## Set up your reviewers
 
-1. Review the private portal. Test one member ticket and the staff dashboard.
-2. Explicitly enable public visitor access on the support Site. The ticket and staff authorization checks remain in effect.
-3. Merge this homepage update into the GitHub Pages branch.
-4. Open the live homepage, select Support, and check all four category links plus Track a ticket.
+The website owner signs in and opens **Staff console → Staff access**, then adds each reviewer's ChatGPT account email and a display name.
 
-The portal starts private. This pull request should remain a draft until public visitor access is enabled so community members are not sent to an inaccessible portal.
+| Role | Access |
+| --- | --- |
+| Support agent | Careers and General Support |
+| Investigator | Staff & Member reports and Appeals |
+| Administrator | Every category |
+| Owner | Every category and staff roster management |
 
-## Reviewer setup
+Members receive a private ticket reference and access key. Signed-in members can use My tickets. Reviewer aliases appear in replies. Internal notes remain restricted to authorized staff.
 
-The website owner opens **Staff console → Staff access** and adds each reviewer's ChatGPT account email and a display name.
+## Member workflow
 
-- Support agent: Careers and General Support.
-- Investigator: Staff & Member reports and Appeals.
-- Administrator: every category.
-- Only the owner manages the staff roster.
+Choose a category, read its welcome message, complete the relevant questions, review the request, and submit. Save the receipt to return to the ticket. Replies and status history appear in the conversation; email and Discord notifications are not configured.
 
-Members receive a private ticket reference and key. Signed-in members can use My tickets. Staff aliases appear in replies. Email and Discord notifications are not configured; members check their ticket for updates.
+Tickets support up to five HTTPS evidence links and five private PNG/JPEG/WebP screenshots, with an 8 MB limit per image. Members can close their ticket, reopen the same case within 14 days, and leave feedback after resolution or closure. Submitted records remain available after closure. Roblox usernames and IDs in forms are self-reported, rather than verified through Roblox sign-in.
 
-Evidence supports up to five HTTPS links and five private PNG/JPEG/WebP screenshots (8 MB each). Tickets are retained after closure, and Roblox usernames in forms are self-reported rather than authenticated Roblox identities.
+## Verification
 
-## Validation
+The support service's TypeScript check, production build, and 13 automated integration tests pass. Live anonymous checks confirm the portal and session endpoint are available and that the staff queue rejects unauthenticated visitors. All seven homepage support links and their destinations were checked.
 
-The support service's TypeScript check, production build, and 13 automated integration tests pass. They cover category messages, privacy, signed-in ownership, role restrictions, internal notes, retry handling, evidence validation, ticket workflow, feedback, access revocation, request limits, and cross-origin writes. Browser visual verification is not available in the authoring environment.
+Browser visual verification was not available in the authoring environment. A member and staff walkthrough can confirm the appearance and the community's preferred review workflow.
