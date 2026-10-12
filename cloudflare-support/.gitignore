@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.checks/
+.wrangler/
+.cloudflare/
+.env
+.env.*
+*.private.json
+*.private.sql
+wrangler.json
+wrangler.jsonc
