@@ -13,13 +13,25 @@ const ownerCode=randomBytes(32).toString('hex');
 const account='a'.repeat(32),database='12345678-1234-4234-8234-123456789abc';
 test('deployment waits through rollout errors and verifies public and staff endpoints without writing tickets',async()=>{
   const calls=[],delays=[],logs=[];
-  const responses=[new Response('private deployment diagnostics',{status:503}),Response.json({signedIn:false,staff:null,hasAccount:false,auth:{type:'staff-code',ownerConfigured:true}}),Response.json({error:'Restricted'},{status:403}),new Response('<html></html>',{headers:{'content-type':'text/html'}})];
+  const responses=[new Response('private deployment diagnostics',{status:503}),Response.json({signedIn:false,staff:null,hasAccount:false,auth:{type:'staff-code',ownerConfigured:true}}),Response.json({error:'Restricted'},{status:403}),new Response('<html></html>',{headers:{'content-type':'text/html'}}),new Response('<html></html>',{headers:{'content-type':'text/html'}})];
   await waitForSupport('https://empire-test.pages.dev',{attempts:2,request:async(url,options)=>{
     assert.equal(options.redirect,'manual');assert.equal(options.method,undefined);
     calls.push(url);return responses.shift();
   },pause:async ms=>delays.push(ms),log:message=>logs.push(message)});
-  assert.deepEqual(calls.map(url=>new URL(url).pathname),['/api/support/session','/api/support/session','/api/support/staff/tickets','/']);
+  assert.deepEqual(calls.map(url=>new URL(url).pathname),['/api/support/session','/api/support/session','/api/support/staff/tickets','/','/staff']);
   assert.deepEqual(delays,[5000]);assert.ok(logs[0].includes('HTTP 503'));assert.equal(logs[0].includes('private deployment diagnostics'),false);
+});
+test('deployment rejects a staff sign-in page that redirects to the homepage',async()=>{
+  const paths=[];
+  await assert.rejects(waitForSupport('https://empire-test.pages.dev',{attempts:1,request:async url=>{
+    const path=new URL(url).pathname;paths.push(path);
+    if(path==='/api/support/session')return Response.json({signedIn:false,staff:null,hasAccount:false,auth:{type:'staff-code',ownerConfigured:true}});
+    if(path==='/api/support/staff/tickets')return Response.json({error:'Restricted'},{status:403});
+    if(path==='/')return new Response('<html></html>',{headers:{'content-type':'text/html'}});
+    if(path==='/staff')return new Response(null,{status:308,headers:{Location:'/'}});
+    assert.fail('Unexpected readiness check');
+  },log:()=>{}}),/Staff sign-in page returned HTTP 308/);
+  assert.deepEqual(paths,['/api/support/session','/api/support/staff/tickets','/','/staff']);
 });
 test('deployment immediately rejects exposed staff data or an authenticated anonymous session',async()=>{
   for(const session of [{signedIn:true,staff:null,hasAccount:true},{signedIn:false,staff:{email:'private@example.test'},hasAccount:false},{signedIn:false,staff:null,hasAccount:false,auth:{type:'staff-code',ownerConfigured:true}}]){

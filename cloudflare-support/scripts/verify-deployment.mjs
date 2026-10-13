@@ -25,6 +25,9 @@ export async function waitForSupport(url,{request=fetch,pause=ms=>new Promise(re
       const page=await get('/');
       await page.body?.cancel();
       if(page.status!==200||!page.headers.get('content-type')?.includes('text/html'))throw new NotReady(`Support page returned HTTP ${page.status}.`);
+      const staffPage=await get('/staff');
+      await staffPage.body?.cancel();
+      if(staffPage.status!==200||!staffPage.headers.get('content-type')?.includes('text/html'))throw new NotReady(`Staff sign-in page returned HTTP ${staffPage.status}.`);
       return;
     }catch(error){
       if(error instanceof UnsafeAccess)throw error;
