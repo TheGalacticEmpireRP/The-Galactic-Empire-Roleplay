@@ -28,6 +28,7 @@ jobs:
           cache-dependency-path: cloudflare-support/package-lock.json
       - run: npm ci
       - run: npm run check && npm test && npm run build
+      - run: npm run test:migrations
       - name: Provision database and publish support portal
         run: npm run deploy
         env:
