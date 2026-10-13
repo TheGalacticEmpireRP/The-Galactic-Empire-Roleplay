@@ -1,4 +1,3 @@
-export const HOME = "https://thegalacticempirerp.github.io/The-Galactic-Empire-Roleplay/";
 export const DISCORD = "https://discord.gg/esWScG4bxZ";
 export const CATEGORIES = [
   {id:"careers",number:"01",name:"Careers",short:"Find your place in the Empire.",description:"Staff applications, officer opportunities, and division leadership enquiries.",icon:"briefcase",route:"Recruitment team",welcome:"Welcome to TGE Careers. Tell us which role interests you, your experience, and what you would bring to the community. Our recruitment team will review your enquiry, confirm current openings and requirements, and guide you through the next steps. Submitting a ticket does not guarantee a position.",checklist:["The role or division that interests you","Your experience and reasons for applying","Your timezone and availability"],notice:"You can enquire about a role even if you are unsure whether recruitment is open."},
