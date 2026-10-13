@@ -53,4 +53,4 @@ Do not upload private database backups to this public repository or GitHub Actio
 
 ## Development checks
 
-Use Node 24. Run `npm ci`, `npm run check`, `npm test`, then `npm run build`. Output is `dist/`, including the advanced-mode `_worker.js` and routing/security headers. `wrangler.json` and `.cloudflare/` are generated and ignored. Credentials, owner email and the rate-limit salt are never written to the repository.
+Use Node 24. Run `npm ci`, `npm run check`, `npm test`, `npm run build`, then `npm run test:migrations`. The migration check uses Wrangler and an isolated local D1 database with the generated Pages configuration. Deployment errors retain Wrangler diagnostics with credentials redacted. Output is `dist/`, including the advanced-mode `_worker.js` and routing/security headers. `wrangler.json` and `.cloudflare/` are generated and ignored. Credentials, owner email and the rate-limit salt are never written to the repository.
