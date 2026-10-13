@@ -5,8 +5,20 @@ import {cloudflareClient,projectName} from '../scripts/cloudflare-api.mjs';
 import {provision} from '../scripts/provision.mjs';
 import {importStatements,importBackup} from '../scripts/import-backup.mjs';
 import {setup,input} from './service.test.mjs';
+import {runWrangler} from '../scripts/wrangler-command.mjs';
 
 const account='a'.repeat(32),database='12345678-1234-4234-8234-123456789abc';
+test('failed database deployment shows the real CLI error without leaking credentials',()=>{
+  const environment={CLOUDFLARE_API_TOKEN:'private-test-token',CLOUDFLARE_ACCOUNT_ID:account,SUPPORT_OWNER_EMAIL:'Owner@example.test'};
+  assert.throws(()=>runWrangler(['d1','migrations','apply','DB'],{environment,spawn:(executable,args,options)=>{
+    assert.equal(options.env.CI,'true');
+    return {status:1,stdout:'Applying database migrations',stderr:`SQLITE_ERROR: syntax error near END\nAuthorization: Bearer secret-header-value\nprivate-test-token ${account} owner@example.test https://example.test/?token=secret-query-value`};
+  }}),error=>{
+    assert.ok(error.message.includes('SQLITE_ERROR: syntax error near END'));
+    for(const privateValue of ['private-test-token',account,'owner@example.test','secret-header-value','secret-query-value'])assert.equal(error.message.includes(privateValue),false);
+    return true;
+  });
+});
 test('deployment requires credentials and validates the branded name before creating resources',async()=>{
   assert.throws(()=>cloudflareClient({}),/secrets/);
   for(const name of ['../secret','UPPER','name.pages.dev','name;command'])assert.throws(()=>projectName(name));
