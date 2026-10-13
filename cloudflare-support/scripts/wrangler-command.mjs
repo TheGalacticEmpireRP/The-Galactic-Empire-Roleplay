@@ -20,4 +20,5 @@ export function runWrangler(args,{environment=process.env,spawn=spawnSync}={}){
     const diagnostic=safeDiagnostic([result.stdout,result.stderr,result.error?.message].filter(Boolean).join('\n'),environment);
     throw new Error(`Cloudflare deployment step failed: ${args.slice(0,3).join(' ')} (exit ${result.status??'unavailable'}).${diagnostic?'\n'+diagnostic:''}`);
   }
+  return result.stdout;
 }

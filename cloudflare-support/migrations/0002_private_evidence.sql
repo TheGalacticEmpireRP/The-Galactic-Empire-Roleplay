@@ -19,8 +19,9 @@ CREATE TABLE evidence_chunks (
 -- Quota reservation and release happen in the same SQLite statement/transaction.
 CREATE TRIGGER evidence_reserve BEFORE INSERT ON evidence_objects
 BEGIN
-  SELECT CASE WHEN (SELECT bytes FROM evidence_usage WHERE id=1) + NEW.size > 419430400
-    THEN RAISE(ABORT,'evidence quota exceeded') END;
+  -- Avoid nested CASE/END, which D1's remote statement parser can split incorrectly.
+  SELECT RAISE(ABORT,'evidence quota exceeded')
+    WHERE (SELECT bytes FROM evidence_usage WHERE id=1) + NEW.size > 419430400;
   UPDATE evidence_usage SET bytes=bytes+NEW.size WHERE id=1;
 END;
 CREATE TRIGGER evidence_release AFTER DELETE ON evidence_objects
