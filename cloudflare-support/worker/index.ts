@@ -28,7 +28,9 @@ export default {
       }catch{return secure(Response.json({error:"Support is temporarily unavailable."},{status:503,headers:{"Cache-Control":"no-store"}}));}
     }
     if(path==="/staff"||path.startsWith("/staff/")){
-      const index=new URL("/index.html",request.url);
+      // Pages redirects /index.html to /. Fetch the canonical asset path
+      // internally so the browser stays on /staff and opens the sign-in view.
+      const index=new URL("/",request.url);
       const response=await env.ASSETS.fetch(new Request(index,request));
       const result=secure(response);result.headers.set("Cache-Control","private, no-store");return result;
     }

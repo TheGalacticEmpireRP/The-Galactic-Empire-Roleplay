@@ -9,7 +9,14 @@ const runtime=new Miniflare({
   modules:true,scriptPath:'dist/_worker.js',compatibilityDate:'2026-05-15',
   d1Databases:['DB'],
   bindings:{OWNER_EMAIL:email,OWNER_LOGIN_HASH:createHash('sha256').update(`tge-staff-code:v1:${email}:${code}`).digest('hex'),RATE_LIMIT_SECRET:'isolated-runtime-test-only'},
-  serviceBindings:{ASSETS:async()=>new Response(readFileSync('dist/index.html'),{headers:{'Content-Type':'text/html'}})}
+  serviceBindings:{ASSETS:async request=>{
+    const path=new URL(request.url).pathname;
+    // Pages canonicalizes /index.html to /. Model that redirect instead of
+    // returning HTML for every URL, so staff routing is tested realistically.
+    if(path==='/index.html')return new Response(null,{status:308,headers:{Location:'/'}});
+    if(path==='/')return new Response(readFileSync('dist/index.html'),{headers:{'Content-Type':'text/html'}});
+    return new Response('Not found',{status:404});
+  }}
 });
 try{
   const db=await runtime.getD1Database('DB');
@@ -20,11 +27,17 @@ try{
     const headers={'Origin':'https://support.test','cf-connecting-ip':'198.51.100.83'};
     if(data!==undefined)headers['Content-Type']='application/json';
     if(cookie)headers.Cookie=cookie;
-    const response=await runtime.dispatchFetch('https://support.test'+path,{method,headers,body:data===undefined?undefined:JSON.stringify(data)});
+    const response=await runtime.dispatchFetch('https://support.test'+path,{method,headers,redirect:'manual',body:data===undefined?undefined:JSON.stringify(data)});
     const type=response.headers.get('content-type')||'';
-    return {status:response.status,cookie:response.headers.get('set-cookie')?.split(';')[0],data:type.includes('application/json')?await response.json():await response.text()};
+    return {status:response.status,location:response.headers.get('location'),cacheControl:response.headers.get('cache-control'),cookie:response.headers.get('set-cookie')?.split(';')[0],data:type.includes('application/json')?await response.json():await response.text()};
   }
-  assert.equal((await send('/staff')).status,200);
+  for(const path of ['/staff','/staff/','/staff/members']){
+    const page=await send(path);
+    assert.equal(page.status,200,`${path} must serve the staff app without a Pages redirect`);
+    assert.equal(page.location,null);
+    assert.equal(page.cacheControl,'private, no-store');
+    assert.match(page.data,/<html/);
+  }
   assert.equal((await send('/api/support/staff/tickets')).status,403);
   const owner=await send('/api/support/auth/login','POST',{email,code});assert.equal(owner.status,200);assert.ok(owner.cookie);
   assert.equal((await send('/api/support/session','GET',undefined,owner.cookie)).data.staff.role,'owner');
