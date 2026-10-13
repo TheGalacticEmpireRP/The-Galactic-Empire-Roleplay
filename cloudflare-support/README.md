@@ -2,7 +2,7 @@
 
 This is the complete Galactic Empire support portal prepared for Cloudflare Pages. It offers Careers, Staff & Member reports, General Support and Appeals, category welcome messages, guided forms, private receipts, member/staff conversations, evidence, status history, assignment, private notes, feedback and owner-managed staff roles.
 
-The proposed free address is **https://tge-support.pages.dev**, subject to availability. The name is selected when creating the Pages project. A custom domain is optional. Deployment never changes the existing website links automatically.
+The public free address is **https://tge-support.pages.dev**. The name is selected when creating the Pages project. A custom domain is optional. Deployment never changes the existing website links automatically.
 
 ## Publish from GitHub
 
@@ -16,7 +16,7 @@ The proposed free address is **https://tge-support.pages.dev**, subject to avail
    | `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account's 32-character ID |
    | `SUPPORT_OWNER_EMAIL` | Your email for verified staff sign-in |
 
-4. Open **Actions → Deploy Imperial Support to Cloudflare → Run workflow**. Use `tge-support` as the project name, or another available branded name. The workflow tests and builds the portal, provisions D1, applies migrations, deploys Pages and checks that anonymous visitors cannot reach the staff queue. The run summary contains the actual published address.
+4. Open **Actions → Deploy Imperial Support to Cloudflare → Run workflow**. Use `tge-support` as the project name, or another available branded name. The workflow tests and builds the portal, provisions D1, applies migrations and deploys Pages. It allows up to two minutes for the public page/API to become ready and checks that anonymous visitors cannot reach the staff queue. The run summary contains the actual published address.
 5. Complete staff sign-in below before sending members to the new portal. Member tickets use their private reference/key and need no account. **Saved tickets** is an explicit option to store private receipts on your own device; downloaded receipts work across devices.
 
 ## Secure staff sign-in

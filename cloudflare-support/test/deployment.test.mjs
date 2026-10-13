@@ -6,8 +6,38 @@ import {provision} from '../scripts/provision.mjs';
 import {importStatements,importBackup} from '../scripts/import-backup.mjs';
 import {setup,input} from './service.test.mjs';
 import {runWrangler} from '../scripts/wrangler-command.mjs';
+import {waitForSupport} from '../scripts/verify-deployment.mjs';
 
 const account='a'.repeat(32),database='12345678-1234-4234-8234-123456789abc';
+test('deployment waits through rollout errors and verifies public and staff endpoints without writing tickets',async()=>{
+  const calls=[],delays=[],logs=[];
+  const responses=[new Response('private deployment diagnostics',{status:503}),Response.json({signedIn:false,staff:null,hasAccount:false}),Response.json({error:'Restricted'},{status:403}),new Response('<html></html>',{headers:{'content-type':'text/html'}})];
+  await waitForSupport('https://empire-test.pages.dev',{attempts:2,request:async(url,options)=>{
+    assert.equal(options.redirect,'manual');assert.equal(options.method,undefined);
+    calls.push(url);return responses.shift();
+  },pause:async ms=>delays.push(ms),log:message=>logs.push(message)});
+  assert.deepEqual(calls.map(url=>new URL(url).pathname),['/api/support/session','/api/support/session','/api/support/staff/tickets','/']);
+  assert.deepEqual(delays,[5000]);assert.ok(logs[0].includes('HTTP 503'));assert.equal(logs[0].includes('private deployment diagnostics'),false);
+});
+test('deployment immediately rejects exposed staff data or an authenticated anonymous session',async()=>{
+  for(const session of [{signedIn:true,staff:null,hasAccount:true},{signedIn:false,staff:{email:'private@example.test'},hasAccount:false},{signedIn:false,staff:null,hasAccount:false}]){
+    let calls=0,pauses=0;
+    await assert.rejects(waitForSupport('https://empire-test.pages.dev',{request:async()=>++calls===1?Response.json(session):Response.json({items:[{title:'private ticket'}]}),pause:async()=>pauses++,log:()=>{}}),error=>{
+      assert.match(error.message,/access verification failed/);assert.equal(error.message.includes('private'),false);return true;
+    });
+    assert.equal(pauses,0);assert.ok(calls<=2);
+  }
+});
+test('deployment retries are bounded and retain the failing endpoint status',async()=>{
+  let calls=0,pauses=0;
+  await assert.rejects(waitForSupport('https://empire-test.pages.dev',{attempts:3,request:async()=>{calls++;return new Response('private diagnostics',{status:503});},pause:async()=>pauses++,log:()=>{}}),error=>{
+    assert.ok(error.message.includes('https://empire-test.pages.dev'));assert.ok(error.message.includes('HTTP 503'));assert.equal(error.message.includes('private diagnostics'),false);return true;
+  });
+  assert.equal(calls,3);assert.equal(pauses,2);
+});
+test('an empty JSON response cannot pass the deployed API check',async()=>{
+  await assert.rejects(waitForSupport('https://empire-test.pages.dev',{attempts:1,request:async()=>Response.json({}),log:()=>{}}),/expected anonymous response/);
+});
 test('failed database deployment shows the real CLI error without leaking credentials',()=>{
   const environment={CLOUDFLARE_API_TOKEN:'private-test-token',CLOUDFLARE_ACCOUNT_ID:account,SUPPORT_OWNER_EMAIL:'Owner@example.test'};
   assert.throws(()=>runWrangler(['d1','migrations','apply','DB'],{environment,spawn:(executable,args,options)=>{
