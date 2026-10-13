@@ -2,12 +2,13 @@ import {spawnSync} from 'node:child_process';
 
 export function safeDiagnostic(value,environment=process.env){
   let text=String(value||'').replace(/\u001b\[[0-?]*[ -/]*[@-~]/g,'');
-  for(const key of ['CLOUDFLARE_API_TOKEN','CLOUDFLARE_ACCOUNT_ID','SUPPORT_OWNER_EMAIL','RATE_LIMIT_SECRET']){
+  for(const key of ['CLOUDFLARE_API_TOKEN','CLOUDFLARE_ACCOUNT_ID','SUPPORT_OWNER_EMAIL','SUPPORT_OWNER_LOGIN_CODE','OWNER_LOGIN_HASH','RATE_LIMIT_SECRET']){
     const secret=environment[key];
     if(secret)for(const form of new Set([secret,secret.toLowerCase(),secret.toUpperCase()]))text=text.split(form).join('[redacted]');
   }
   text=text.replace(/(Authorization\s*[:=]\s*(?:Bearer|Basic)\s+)[^\s"']+/gi,'$1[redacted]');
   text=text.replace(/(https?:\/\/[^\s?#]+)\?[^\s]*/g,'$1?[redacted]');
+  text=text.replace(/\b[a-f0-9]{64}\b/gi,'[redacted hash]');
   return text.trim().slice(-6000);
 }
 
