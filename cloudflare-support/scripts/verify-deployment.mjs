@@ -17,6 +17,7 @@ export async function waitForSupport(url,{request=fetch,pause=ms=>new Promise(re
       const session=await response.json();
       if(session?.staff||session?.signedIn||session?.hasAccount)throw new UnsafeAccess('Anonymous access verification failed. Keep the existing support links.');
       if(session?.signedIn!==false||session?.staff!==null||session?.hasAccount!==false)throw new NotReady('Public session did not return the expected anonymous response.');
+      if(session.auth?.type!=='staff-code'||session.auth.ownerConfigured!==true)throw new NotReady('Built-in staff sign-in is not ready.');
       const forbidden=await get('/api/support/staff/tickets');
       await forbidden.body?.cancel();
       if(forbidden.status===200)throw new UnsafeAccess('Staff access verification failed (HTTP 200). Keep the existing support links.');

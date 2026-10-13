@@ -14,22 +14,35 @@ The public free address is **https://tge-support.pages.dev**. The name is select
    |---|---|
    | `CLOUDFLARE_API_TOKEN` | Your restricted Cloudflare token |
    | `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account's 32-character ID |
-   | `SUPPORT_OWNER_EMAIL` | Your email for verified staff sign-in |
+   | `SUPPORT_OWNER_EMAIL` | Your owner email for staff sign-in |
+   | `SUPPORT_OWNER_LOGIN_CODE` | A private random code generated with `owner-code.html` |
 
 4. Open **Actions → Deploy Imperial Support to Cloudflare → Run workflow**. Use `tge-support` as the project name, or another available branded name. The workflow tests and builds the portal, provisions D1, applies migrations and deploys Pages. It allows up to two minutes for the public page/API to become ready and checks that anonymous visitors cannot reach the staff queue. The run summary contains the actual published address.
-5. Complete staff sign-in below before sending members to the new portal. Member tickets use their private reference/key and need no account. **Saved tickets** is an explicit option to store private receipts on your own device; downloaded receipts work across devices.
+5. Activate your owner account below before sending members to the new portal. Member tickets use their private reference/key and need no account. **Saved tickets** is an explicit option to store private receipts on your own device; downloaded receipts work across devices.
 
-## Secure staff sign-in
+## Built-in staff sign-in
 
-The portal requires both a cryptographically verified **Cloudflare Access** token and an authorized email in the support roster. Setting an email header grants no access. Staff access remains closed until Access is configured.
+Staff sign in directly at **https://tge-support.pages.dev/staff** with their email and an individual private access code. Cloudflare Access and Zero Trust enrollment are not required. Member tickets still need no account.
 
-1. Set up Cloudflare Zero Trust with its free plan and a team name. Enable email **One-time PIN** as the login method, or use an existing identity provider.
-2. In the Pages project, enable its preview Access policy. Open **Manage** on the generated application. Follow Cloudflare's [Pages Access instructions](https://developers.cloudflare.com/pages/platform/known-issues/#enable-access-on-your-pagesdev-domain) to remove the wildcard from its public hostname. Set the hostname to your actual production hostname and the path to **`/staff`**. Keep the public portal at `/` open. Use only the production staff application audience for this portal.
-3. Set an **Allow** policy that includes your exact owner email. Use the default cookie path `/` so the staff session can accompany API requests. Add reviewers' exact emails to the policy when you add them to the roster. Do not use an Everyone or Bypass policy.
-4. Copy the application's **AUD** tag. In GitHub **Actions variables**, add `CLOUDFLARE_ACCESS_TEAM` (only the team name) and `CLOUDFLARE_ACCESS_AUD` (the AUD tag). Rerun the deploy workflow with the **same project name**.
-5. Open `<published address>/staff`, verify your email, and confirm owner access. Add reviewers under **Staff access** and include their emails in the Access policy. Support agents see Careers/General Support; investigators see Reports/Appeals; administrators see all categories. Only the owner manages the roster. Revocation is checked on every API request.
+### Activate your owner account
 
-Public API routes are protected inside the Worker and return 403 to unauthorized staff requests. Access gates the staff page. Preview deployments are given no production database binding.
+1. Download `owner-code.html` from this folder and open the file in your browser. Click **Generate owner code**, copy it and keep a private copy. Generation happens entirely on your device; the tool makes no network requests and saves nothing.
+2. In GitHub **Settings → Secrets and variables → Actions → Secrets**, add **`SUPPORT_OWNER_LOGIN_CODE`** with the generated code as its value. Keep the existing `SUPPORT_OWNER_EMAIL` secret as your owner sign-in email. A code must be a generated 64-character hexadecimal value, not a human-chosen password.
+3. Start a **new** deployment run on `main`, with the existing **`tge-support`** project name. The workflow seals only a hash of your code in Cloudflare, applies the additional staff tables, and keeps existing tickets intact. Owner configuration is validated before any resources are changed.
+4. Open **https://tge-support.pages.dev/staff**, enter the owner email and private code, and choose **Sign in to staff console**. Confirm you have **Owner access** before switching website links.
+5. If you previously enabled a Cloudflare Access application for this staff page, disable that application so the built-in sign-in page can open. The Worker itself protects every staff API request. The old `CLOUDFLARE_ACCESS_TEAM` and `CLOUDFLARE_ACCESS_AUD` variables are no longer used.
+
+### Add and manage reviewers
+
+- Open **Staff access**. Choose the reviewer's email, display name and role, then select **Save reviewer and create code**. Copy or download their private invitation and share it privately. Invitations are not emailed automatically.
+- Codes are displayed only when generated; their plaintext is never stored on the server. **New sign-in code** replaces a lost code and signs that reviewer out on every device.
+- Saving an existing reviewer replaces their code. Removing access deletes their login credential and sessions. Role changes are rechecked on every request and invalidate earlier sessions.
+- Support agents see Careers and General Support; investigators see Reports and Appeals; administrators see all categories. Only the owner can manage reviewer access or issue codes.
+- Sign-in creates a separate 256-bit session token in a `Secure`, `HttpOnly`, `SameSite=Strict`, host-only cookie. D1 stores only token/code hashes. Sessions expire after eight hours or 30 minutes without API activity, with at most five sessions per person. **Sign out** ends the current session; **Sign out all devices** ends every session for that person.
+- Sign-in requests are rate limited by IP and email. Authentication and staff changes require a matching browser origin. Header impersonation, legacy Cloudflare identity cookies, and client-supplied roles cannot authorize access.
+- To replace a lost owner code, generate a new one, update `SUPPORT_OWNER_LOGIN_CODE` and run deployment again. Existing owner sessions end; reviewers retain their own codes. The owner code is never sent to another staff member.
+
+Public pages include no private staff data. All permissions and attachment checks remain in the Worker. Preview deployments have no production database or owner credentials.
 
 ## Move existing records and switch the website
 
@@ -37,7 +50,7 @@ The current public portal remains at https://tge-support.gonzalezsuarezalejan.ch
 
 1. Verify the new public categories and owner sign-in. Briefly pause writes on the original portal before taking the final export, so replies are not split between two databases.
 2. Export complete `tickets`, `messages`, `events`, `attachments` and `staff` rows from the original portal, with no truncated values. Keep the JSON private. Format: `{ "format": "tge-support-backup-v1", "complete": true, "tables": { "tickets": [], "messages": [], "events": [], "attachments": [], "staff": [] } }`.
-3. From a trusted computer in this directory, run `npm ci`, `npm run build`, and `npm run prepare:cloudflare` with the same account/token, owner email and project settings in your environment. Then run `node scripts/import-backup.mjs /absolute/path/tge-support.private.json`. Import preserves references, key hashes, conversations and history, then verifies each record. Staff identities are rebound after verified Cloudflare sign-in. Previous ChatGPT account linking cannot authorize Cloudflare users; those members use their original receipt keys.
+3. From a trusted computer in this directory, run `npm ci`, `npm run build`, and `npm run prepare:cloudflare` with the same account/token, owner email, owner login code and project settings in your environment. Then run `node scripts/import-backup.mjs /absolute/path/tge-support.private.json`. Import preserves references, key hashes, conversations and history, then verifies each record. Staff identities are bound to their owner-issued sign-in codes; imported reviewers need a new code from Staff access. Previous ChatGPT account linking cannot authorize Cloudflare users; those members use their original receipt keys.
 4. This record-only import refuses backups containing screenshots or pending image uploads. Transfer and verify those bytes separately before cutover. The original portal must stay available if any record or image has not been verified.
 5. Check an original ticket with its reference/key and check the staff queue. Update `index.html`, `support.html` and `SUPPORT_SETUP.md` in the main website repository to the **verified production address**, preserving category query links. Publish a forwarding notice on the original portal for existing receipt holders.
 
@@ -53,4 +66,4 @@ Do not upload private database backups to this public repository or GitHub Actio
 
 ## Development checks
 
-Use Node 24. Run `npm ci`, `npm run check`, `npm test`, `npm run build`, then `npm run test:migrations`. The migration check uses Wrangler and an isolated local D1 database with the generated Pages configuration. Deployment errors retain Wrangler diagnostics with credentials redacted. Output is `dist/`, including the advanced-mode `_worker.js` and routing/security headers. `wrangler.json` and `.cloudflare/` are generated and ignored. Credentials, owner email and the rate-limit salt are never written to the repository.
+Use Node 24. Run `npm ci`, `npm run check`, `npm test`, `npm run build`, then `npm run test:migrations`. The migration check uses Wrangler and an isolated local D1 database with the generated Pages configuration, then verifies owner/reviewer login and revocation in the built Cloudflare Worker runtime. Deployment errors retain Wrangler diagnostics with credentials redacted. Output is `dist/`, including the advanced-mode `_worker.js` and routing/security headers. `wrangler.json` and `.cloudflare/` are generated and ignored. Credentials, owner email, owner code/hash and the rate-limit salt are never written to the repository. The offline owner-code tool contains no credential until you generate one locally.

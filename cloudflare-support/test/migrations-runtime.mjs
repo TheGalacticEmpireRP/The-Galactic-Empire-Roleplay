@@ -6,7 +6,7 @@ import {runWrangler} from '../scripts/wrangler-command.mjs';
 
 const name='tge-migrations-test',database='00000000-0000-4000-8000-000000000001';
 const files=new Map();
-await provision({CLOUDFLARE_API_TOKEN:'local-test-token',CLOUDFLARE_ACCOUNT_ID:'a'.repeat(32),SUPPORT_OWNER_EMAIL:'local@example.test',SUPPORT_PROJECT_NAME:name},async(url,options)=>{
+await provision({CLOUDFLARE_API_TOKEN:'local-test-token',CLOUDFLARE_ACCOUNT_ID:'a'.repeat(32),SUPPORT_OWNER_EMAIL:'local@example.test',SUPPORT_OWNER_LOGIN_CODE:'0123456789abcdef'.repeat(4),SUPPORT_PROJECT_NAME:name},async(url,options)=>{
   if(url.includes('/d1/database?'))return Response.json({success:true,result:[]});
   if(url.endsWith('/pages/projects/'+name)&&options.method==='GET')return Response.json({success:false},{status:404});
   if(url.endsWith('/d1/database'))return Response.json({success:true,result:{uuid:database}});

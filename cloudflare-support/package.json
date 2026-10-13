@@ -7,7 +7,7 @@
   "scripts": {
     "check": "tsc --noEmit",
     "test": "node test/run.mjs",
-    "test:migrations": "node test/migrations-runtime.mjs",
+    "test:migrations": "node test/migrations-runtime.mjs && node test/staff-runtime.mjs",
     "build": "vite build && vite build --config vite.worker.config.ts && node scripts/finish-build.mjs",
     "prepare:cloudflare": "node scripts/provision.mjs",
     "deploy": "node scripts/deploy.mjs"

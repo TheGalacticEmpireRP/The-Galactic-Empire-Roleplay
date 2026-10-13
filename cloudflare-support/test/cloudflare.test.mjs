@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import {setup,input} from './service.test.mjs';
 import {handleSupport} from '../.checks/lib/service.js';
 import {D1Evidence,CHUNK_SIZE} from '../.checks/worker/evidence.js';
-import {createAccessVerifier} from '../.checks/worker/access.js';
 import worker from '../.checks/worker/index.js';
 import {readReceipts,saveReceipt,forgetReceipt,RECEIPTS_KEY} from '../.checks/lib/receipts.js';
 const owner={id:'owner-id',email:'owner@example.test'};
@@ -13,26 +12,6 @@ test('forged platform and Cloudflare email headers cannot grant staff access',as
   assert.equal((await handleSupport(request,s.env)).status,403);
   const session=await worker.fetch(new Request('https://support.test/api/support/session',{headers:request.headers}),s.env);
   assert.equal((await session.json()).signedIn,false);
-});
-test('Cloudflare Access validates signatures, issuer, audience, claims and cookie tokens',async()=>{
-  const key=await crypto.subtle.generateKey({name:'RSASSA-PKCS1-v1_5',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},true,['sign','verify']);
-  const jwk=await crypto.subtle.exportKey('jwk',key.publicKey);jwk.kid='key-1';jwk.alg='RS256';jwk.use='sig';
-  let fetches=0;
-  const verify=createAccessVerifier(async url=>{assert.equal(url,'https://empire-test.cloudflareaccess.com/cdn-cgi/access/certs');fetches++;return Response.json({keys:[jwk]});});
-  const env={ACCESS_TEAM:'empire-test',ACCESS_AUD:'app-audience'},time=Math.floor(Date.now()/1000);
-  const claims={iss:'https://empire-test.cloudflareaccess.com',aud:['app-audience'],exp:time+3600,iat:time-10,sub:'verified-subject',email:'OWNER@example.test'};
-  const encode=v=>Buffer.from(JSON.stringify(v)).toString('base64url');
-  const sign=async(payload=claims,header={alg:'RS256',kid:'key-1'})=>{const data=encode(header)+'.'+encode(payload);const signature=await crypto.subtle.sign('RSASSA-PKCS1-v1_5',key.privateKey,new TextEncoder().encode(data));return data+'.'+Buffer.from(signature).toString('base64url');};
-  const request=token=>new Request('https://support.test/api/support/session',{headers:{'cf-access-jwt-assertion':token}});
-  const token=await sign();
-  assert.deepEqual(await verify(request(token),env),{id:'cf-access:verified-subject',email:'owner@example.test'});
-  assert.ok(await verify(new Request('https://support.test',{headers:{cookie:'other=1; CF_Authorization='+token}}),env));
-  assert.equal(fetches,1);
-  for(const changes of [{iss:'https://attacker.example'},{aud:['other-app']},{exp:time-1},{iat:time+100},{nbf:time+100},{email:undefined},{sub:undefined},{exp:undefined}])assert.equal(await verify(request(await sign({...claims,...changes})),env),null);
-  for(const changes of [{alg:'none',kid:'key-1'},{alg:'HS256',kid:'key-1'},{alg:'RS256',kid:'unknown'},{alg:'RS256',kid:'key-1',crit:['b64']}])assert.equal(await verify(request(await sign(claims,changes)),env),null);
-  const parts=token.split('.');parts[1]=encode({...claims,email:'attacker@example.test'});assert.equal(await verify(request(parts.join('.')),env),null);
-  assert.equal(await verify(request(token),{}),null);
-  assert.equal(fetches,1,'unknown key identifiers do not trigger unbounded key fetches');
 });
 test('private D1 screenshots round-trip across chunks and support an 8 MB upload',async()=>{
   const s=setup();s.env.BUCKET=new D1Evidence(s.env.DB);

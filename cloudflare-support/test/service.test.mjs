@@ -34,7 +34,7 @@ export function setup(){
   const data=type.includes('application/json')?await response.json():await response.arrayBuffer();
   return {status:response.status,headers:response.headers,data,queries:queryCount};
  };
- return {sql,env,send,objects};
+ return {sql,env,send,objects,queryCount:()=>queryCount};
 }
 const owner={id:'owner-id',email:'owner@example.test'},agent={id:'agent-id',email:'agent@example.test'},investigator={id:'investigator-id',email:'investigator@example.test'};
 export function input(category='general'){

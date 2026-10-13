@@ -84,7 +84,7 @@ export async function handleSupport(req:Request,env:Bindings,identity:Identity|n
      const cats=role==="support"?["careers","general"]:role==="investigator"?["reports","appeals"]:allCategories;
      await db.batch([prep("INSERT INTO staff (email,alias,role,categories,created_at) VALUES (?,?,?,?,?) ON CONFLICT(email) DO UPDATE SET alias=excluded.alias,role=excluded.role,categories=excluded.categories",e,alias,role,JSON.stringify(cats),now())]);return json({ok:true});
     }
-    if(req.method==="DELETE"&&path[2]){const e=decodeURIComponent(path[2]).toLowerCase();if(e===a.email)throw new ApiError(400,"Owner access cannot be removed.");await db.batch([prep("DELETE FROM staff WHERE email = ?",e),prep("UPDATE tickets SET assignee = NULL WHERE assignee = ?",e)]);return json({ok:true});}
+    if(req.method==="DELETE"&&path[2]){const e=decodeURIComponent(path[2]).toLowerCase();if(e===a.email)throw new ApiError(400,"Owner access cannot be removed.");await db.batch([prep("DELETE FROM staff_sessions WHERE email = ?",e),prep("DELETE FROM staff WHERE email = ?",e),prep("UPDATE tickets SET assignee = NULL WHERE assignee = ?",e)]);return json({ok:true});}
    }
    if(path[1]==="tickets"&&req.method==="GET"){
     const allowed=a.categories.filter(c=>allCategories.includes(c as any));if(!allowed.length)return json({items:[],total:0,stats:[],page:1});
