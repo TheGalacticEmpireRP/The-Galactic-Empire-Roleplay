@@ -1,8 +1,9 @@
 import { CATEGORIES, STATUSES, PRIORITIES } from "./content";
-import { ApiError, text, optional, oneOf, validateTicket, imageType } from "./validation";
+import { ApiError, text, optional, oneOf, validateTicket, imageType, notificationEmail } from "./validation";
+import {emailConfigured,setTicketEmail,verifyTicketEmail,removeTicketEmail,queueTicketEmail,deliverTicketEmail,ticketEmailStatus,retryTicketEmails,type EmailEnv} from "./email";
 
 export type EvidenceBucket={put(key:string,value:ArrayBuffer,options?:unknown):Promise<unknown>;get(key:string):Promise<{body:ReadableStream<Uint8Array>}|null>;delete(key:string):Promise<unknown>};
-type Bindings={DB:D1Database;BUCKET?:EvidenceBucket;OWNER_EMAIL?:string;RATE_LIMIT_SECRET?:string};
+type Bindings=EmailEnv&{DB:D1Database;BUCKET?:EvidenceBucket;OWNER_EMAIL?:string;RATE_LIMIT_SECRET?:string};
 type Actor={id:string;email:string;alias:string;role:string;categories:string[]};
 const allCategories=CATEGORIES.map(c=>c.id);
 const uuid=()=>crypto.randomUUID();
@@ -50,7 +51,13 @@ export async function handleSupport(req:Request,env:Bindings,identity:Identity|n
    if(!staffAccess&&!memberAccess)throw new ApiError(404,"Ticket not found or access denied.");
    return {t,staffAccess,memberAccess};
   };
-  if(path[0]==="session"&&req.method==="GET")return json({signedIn:!!userId,staff:actor&&{alias:actor.alias,role:actor.role,email:actor.email,categories:actor.categories},hasAccount:!!userId});
+  if(path[0]==="session"&&req.method==="GET")return json({signedIn:!!userId,staff:actor&&{alias:actor.alias,role:actor.role,email:actor.email,categories:actor.categories},hasAccount:!!userId,emailNotificationsAvailable:emailConfigured(env)});
+  if(path[0]==="notifications"&&path[1]==="verify"&&path.length===2&&req.method==="POST"){
+   await rate("email-verify",20,300);const b=await readJson(req),token=text(b.token,"Confirmation token",64,64);
+   if(!/^[a-f0-9]{64}$/.test(token))throw new ApiError(400,"This confirmation link is invalid or has expired.");
+   const result=await verifyTicketEmail(db,token);if(!result)throw new ApiError(400,"This confirmation link has expired or was already used. Open your ticket to request a new one.");
+   return json({ok:true,reference:result.reference});
+  }
   if(path[0]==="mine"&&req.method==="GET"){
    if(!userId)throw new ApiError(401,"Sign in to view tickets linked to your account.");
    const r=await prep("SELECT reference,category,title,status,created_at,updated_at FROM tickets WHERE owner_id = ? ORDER BY updated_at DESC LIMIT 100",userId).all();return json({items:r.results});
@@ -59,8 +66,8 @@ export async function handleSupport(req:Request,env:Bindings,identity:Identity|n
    const raw=await readJson(req);if(!raw||typeof raw!=="object"||Array.isArray(raw))throw new ApiError(400,"Invalid ticket data.");
    const requestId=text(raw.requestId,"Submission ID",36,36),key=text(raw.clientKey,"Access key",64,64);
    if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(requestId)||!/^[a-f0-9]{64}$/.test(key))throw new ApiError(400,"Invalid submission credentials.");
-   const hash=await digest(key),existing=await prep("SELECT reference,category,access_hash FROM tickets WHERE submission_id=?",requestId).first<any>();
-   if(existing){if(!keyEqual(existing.access_hash,hash))throw new ApiError(409,"Submission already exists.");return json({reference:existing.reference,key,category:existing.category},200);}
+   const hash=await digest(key),existing=await prep("SELECT id,reference,category,access_hash FROM tickets WHERE submission_id=?",requestId).first<any>();
+   if(existing){if(!keyEqual(existing.access_hash,hash))throw new ApiError(409,"Submission already exists.");const mail=await ticketEmailStatus(db,env,existing.id,true,false);return json({reference:existing.reference,key,category:existing.category,emailNotification:mail.enabled?"verified":mail.pendingVerification?"pending_verification":"not_enabled"},200);}
    await rate("create",5,3600,userId||undefined);await rate("create-day",20,86400,userId||undefined);
    const data=validateTicket(raw),id=uuid(),reference=`TGE-${new Date().getUTCFullYear()}-${uuid().slice(0,8).toUpperCase()}`,time=now();
    const c=CATEGORIES.find(c=>c.id===data.category)!;
@@ -71,7 +78,9 @@ export async function handleSupport(req:Request,env:Bindings,identity:Identity|n
     event(id,"Ticket submitted","public",data.username),
    ]);
    await prep("DELETE FROM rate_limits WHERE expires_at < ?",time-86400000).run();
-   return json({reference,key,category:data.category},201);
+   let emailNotification:string="not_enabled";
+   if(data.notificationEmail){try{emailNotification=await setTicketEmail(db,env,id,reference,data.notificationEmail);}catch{emailNotification="failed";}}
+   return json({reference,key,category:data.category,emailNotification},201);
   }
   if(path[0]==="staff"){
    const a=requireStaff();
@@ -113,7 +122,22 @@ export async function handleSupport(req:Request,env:Bindings,identity:Identity|n
     const ev=await prep(`SELECT id,label,visibility,actor,created_at FROM events WHERE ticket_id = ?${staffAccess?"":" AND visibility = 'public'"} ORDER BY created_at DESC`,t.id).all();
     const files=await prep("SELECT id,filename,content_type,size,created_at FROM attachments WHERE ticket_id = ? ORDER BY created_at",t.id).all();
     const safe=cleanTicket(t);if(!staffAccess){delete safe.assignee;delete safe.priority;delete safe.discord;delete safe.roblox_id;}
-    return json({ticket:safe,messages:msgs.results,events:ev.results,attachments:files.results,staffAccess,memberAccess});
+    return json({ticket:safe,messages:msgs.results,events:ev.results,attachments:files.results,staffAccess,memberAccess,emailNotifications:await ticketEmailStatus(db,env,t.id,memberAccess,staffAccess)});
+   }
+   if(path[2]==="notifications"){
+    if(path[3]==="retry"&&path.length===4&&req.method==="POST"){
+     if(!staffAccess)throw new ApiError(403,"Staff access is required.");await rate("email-retry",10,3600,actor!.id);
+     return json(await retryTicketEmails(db,env,t.id));
+    }
+    if(path.length!==3)throw new ApiError(404,"Support action not found.");
+    if(!memberAccess)throw new ApiError(403,"Only the ticket author can change email alerts.");
+    if(req.method==="DELETE"){await removeTicketEmail(db,t.id);return json({ok:true});}
+    if(req.method==="POST"){
+     const b=await readJson(req),email=notificationEmail(b.email);if(!email)throw new ApiError(400,"Enter your email address.");
+     if(!emailConfigured(env))throw new ApiError(503,"Email alerts are awaiting setup. You can still check replies in your ticket.");
+     await rate("email-subscribe",3,3600,t.id);
+     return json({ok:true,emailNotification:await setTicketEmail(db,env,t.id,t.reference,email)});
+    }
    }
    if(path.length===2&&req.method==="PATCH"){
     if(!staffAccess)throw new ApiError(403,"Staff access is required.");const a=requireStaff();await rate("staff-write",160,3600,a.id);const b=await readJson(req),reason=text(b.reason,"Update reason",3,1000);
@@ -131,10 +155,11 @@ export async function handleSupport(req:Request,env:Bindings,identity:Identity|n
     const b=await readJson(req),body=text(b.body,"Message",3,6000);await rate("reply",40,3600,staffAccess?actor!.id:t.id);
     const internal=b.internal===true;if(internal&&!staffAccess)throw new ApiError(403,"Staff access is required for private notes.");
     if(!internal&&["resolved","closed"].includes(t.status))throw new ApiError(400,"Reopen the ticket before adding a reply.");
-    const time=now(),kind=internal?"internal":staffAccess?"staff":"member",author=staffAccess?actor!.alias:t.username;
-    const statements=[prep("INSERT INTO messages (id,ticket_id,author,author_id,kind,body,created_at) VALUES (?,?,?,?,?,?,?)",uuid(),t.id,author,staffAccess?actor!.id:userId,kind,body,time),prep("UPDATE tickets SET updated_at=? WHERE id=?",time,t.id)];
+    const time=now(),kind=internal?"internal":staffAccess?"staff":"member",author=staffAccess?actor!.alias:t.username,messageId=uuid();
+    const statements=[prep("INSERT INTO messages (id,ticket_id,author,author_id,kind,body,created_at) VALUES (?,?,?,?,?,?,?)",messageId,t.id,author,staffAccess?actor!.id:userId,kind,body,time),prep("UPDATE tickets SET updated_at=? WHERE id=?",time,t.id)];
+    if(kind==="staff")statements.push(queueTicketEmail(db,t.id,messageId,time));
     if(!staffAccess&&t.status==="waiting")statements.push(prep("UPDATE tickets SET status='in_review' WHERE id=?",t.id),event(t.id,"Your reply was sent for review","public",t.username));
-    await db.batch(statements);return json({ok:true},201);
+    await db.batch(statements);return json({ok:true,emailNotification:kind==="staff"?await deliverTicketEmail(db,env,messageId):"not_enabled"},201);
    }
    if(path[2]==="action"&&req.method==="POST"){
     if(!memberAccess)throw new ApiError(403,"Only the ticket author can use this action.");const b=await readJson(req),action=oneOf(b.action,["close","reopen"],"action"),reason=text(b.reason,"Reason",3,1000);await rate("ticket-action",10,3600,t.id);
@@ -170,3 +195,4 @@ export async function handleSupport(req:Request,env:Bindings,identity:Identity|n
   throw new ApiError(404,"Support action not found.");
  }catch(e){if(e instanceof ApiError){const r=json({error:e.message},e.status);if(e.retryAfter)r.headers.set("Retry-After",String(e.retryAfter));return r;}console.error("Support request failed",e instanceof Error?e.message:"unknown error");return json({error:"Something went wrong. Please retry. Your existing ticket remains saved."},500);}
 }
+

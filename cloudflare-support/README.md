@@ -20,6 +20,10 @@ The public free address is **https://tge-support.pages.dev**. The name is select
 4. Open **Actions → Deploy Imperial Support to Cloudflare → Run workflow**. Use `tge-support` as the project name, or another available branded name. The workflow tests and builds the portal, provisions D1, applies migrations and deploys Pages. It allows up to two minutes for the public page/API to become ready and checks that anonymous visitors cannot reach the staff queue. The run summary contains the actual published address.
 5. Activate your owner account below before sending members to the new portal. Member tickets use their private reference/key and need no account. **Saved tickets** is an explicit option to store private receipts on your own device; downloaded receipts work across devices.
 
+## Member email reply alerts
+
+See [EMAIL_ALERTS_SETUP.md](EMAIL_ALERTS_SETUP.md) to connect the sender and activate email notifications. Members can add an address on a new ticket or inside an existing conversation. The feature is disabled until an email provider is configured.
+
 ## Built-in staff sign-in
 
 Staff sign in directly at **https://tge-support.pages.dev/staff** with their email and an individual private access code. Cloudflare Access and Zero Trust enrollment are not required. Member tickets still need no account.
@@ -61,9 +65,10 @@ Do not upload private database backups to this public repository or GitHub Actio
 - Pages static assets are served directly. Only API requests and the staff page invoke the Worker.
 - D1 stores both tickets and private screenshot chunks; this package requires no R2 enrollment. Each image is limited to 8 MB and each ticket to five images. Images use 256 KiB chunks, below D1 row limits. Storage reservations are atomic and uploads roll back on failure.
 - The package caps screenshot bytes at 400 MiB to leave space within the free single-database limit. Indexes/metadata also use space, so monitor actual D1 storage. If the cap is reached, members can still submit ticket text and HTTPS evidence links. Cloudflare free request/database quotas still apply; this is not unlimited hosting.
-- Replies appear in ticket conversations. Email and Discord notifications are not configured. Records are retained after closure; use General Support for privacy requests.
+- Members can opt in to email alerts for public staff replies after confirming their address. Activation requires the email sender settings in [EMAIL_ALERTS_SETUP.md](EMAIL_ALERTS_SETUP.md). Failed email sends keep replies saved, and staff can retry pending alerts from the ticket. Discord notifications are not configured. Records are retained after closure; use General Support for privacy requests.
 - Repeated deployment reuses the same project/database and applies only pending migrations. The request-limit salt rotates on deployment. Ticket keys and records are preserved.
 
 ## Development checks
 
 Use Node 24. Run `npm ci`, `npm run check`, `npm test`, `npm run build`, then `npm run test:migrations`. The migration check uses Wrangler and an isolated local D1 database with the generated Pages configuration, then verifies owner/reviewer login and revocation in the built Cloudflare Worker runtime. Deployment errors retain Wrangler diagnostics with credentials redacted. Output is `dist/`, including the advanced-mode `_worker.js` and routing/security headers. `wrangler.json` and `.cloudflare/` are generated and ignored. Credentials, owner email, owner code/hash and the rate-limit salt are never written to the repository. The offline owner-code tool contains no credential until you generate one locally.
+

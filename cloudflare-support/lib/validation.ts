@@ -2,6 +2,11 @@ import { CATEGORIES, type CategoryId } from "./content";
 export class ApiError extends Error { constructor(public status:number,message:string,public retryAfter?:number){super(message);} }
 export function text(value:unknown,label:string,min=0,max=1000){if(typeof value!=="string")throw new ApiError(400,`${label} is required.`);const s=value.trim();if(s.length<min||s.length>max)throw new ApiError(400,`${label} must contain ${min}–${max} characters.`);return s;}
 export function optional(value:unknown,label:string,max=1000){return value==null||value===""?"":text(value,label,0,max);}
+export function notificationEmail(value:unknown){
+ const email=optional(value,"Notification email",254).toLowerCase();
+ if(email&&(!/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/i.test(email)||email.split("@")[0].length>64||email.startsWith(".")||email.includes("..")||email.includes(".@")))throw new ApiError(400,"Enter a valid email address for reply notifications.");
+ return email;
+}
 export function oneOf(value:unknown,values:readonly string[],label:string){if(typeof value!=="string"||!values.includes(value))throw new ApiError(400,`Choose a valid ${label}.`);return value;}
 export function validateTicket(raw:any){
  if(!raw||typeof raw!=="object"||Array.isArray(raw))throw new ApiError(400,"Invalid ticket data.");
@@ -26,6 +31,7 @@ export function validateTicket(raw:any){
  }
  if(!Array.isArray(raw.evidence)||raw.evidence.length>5)throw new ApiError(400,"Include at most five evidence links.");
  const evidence=raw.evidence.filter((x:unknown)=>x!=="").map((x:unknown)=>{const s=text(x,"Evidence link",8,1500);let u:URL;try{u=new URL(s);}catch{throw new ApiError(400,"Use a full HTTPS evidence link.");}if(u.protocol!=="https:"||u.username||u.password)throw new ApiError(400,"Evidence links must use HTTPS and contain no embedded credentials.");return u.toString();});
- return {category,username,robloxId,title,description,discord,details,evidence};
+ return {category,username,robloxId,title,description,discord,details,evidence,notificationEmail:notificationEmail(raw.notificationEmail)};
 }
 export function imageType(bytes:Uint8Array){if(bytes[0]===137&&bytes[1]===80&&bytes[2]===78&&bytes[3]===71&&bytes[4]===13&&bytes[5]===10&&bytes[6]===26&&bytes[7]===10)return "image/png";if(bytes[0]===255&&bytes[1]===216&&bytes[2]===255)return "image/jpeg";if(new TextDecoder().decode(bytes.slice(0,4))==="RIFF"&&new TextDecoder().decode(bytes.slice(8,12))==="WEBP")return "image/webp";throw new ApiError(400,"Upload a PNG, JPEG, or WebP image. The file contents must match its type.");}
+

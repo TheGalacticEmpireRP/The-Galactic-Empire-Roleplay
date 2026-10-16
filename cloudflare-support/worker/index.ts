@@ -1,7 +1,8 @@
+import type {EmailEnv} from "../lib/email";
 import {handleSupport} from "../lib/service";
 import {createStaffAuth,type StaffAuthEnv} from "./staff-auth";
 import {D1Evidence} from "./evidence";
-export type Env=StaffAuthEnv&{ASSETS:Fetcher};
+export type Env=StaffAuthEnv&EmailEnv&{ASSETS:Fetcher};
 const secure=(response:Response)=>{
   const result=new Response(response.body,response);
   result.headers.set("X-Content-Type-Options","nosniff");
@@ -38,3 +39,4 @@ export default {
     return secure(await env.ASSETS.fetch(request));
   }
 };
+

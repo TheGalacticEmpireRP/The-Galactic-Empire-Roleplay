@@ -37,3 +37,6 @@ jobs:
           SUPPORT_OWNER_EMAIL: ${{ secrets.SUPPORT_OWNER_EMAIL }}
           SUPPORT_OWNER_LOGIN_CODE: ${{ secrets.SUPPORT_OWNER_LOGIN_CODE }}
           SUPPORT_PROJECT_NAME: ${{ inputs.project_name }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          SUPPORT_EMAIL_FROM: ${{ secrets.SUPPORT_EMAIL_FROM }}
+

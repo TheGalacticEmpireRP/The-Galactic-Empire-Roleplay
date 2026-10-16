@@ -2,7 +2,7 @@ import {spawnSync} from 'node:child_process';
 
 export function safeDiagnostic(value,environment=process.env){
   let text=String(value||'').replace(/\u001b\[[0-?]*[ -/]*[@-~]/g,'');
-  for(const key of ['CLOUDFLARE_API_TOKEN','CLOUDFLARE_ACCOUNT_ID','SUPPORT_OWNER_EMAIL','SUPPORT_OWNER_LOGIN_CODE','OWNER_LOGIN_HASH','RATE_LIMIT_SECRET']){
+  for(const key of ['CLOUDFLARE_API_TOKEN','CLOUDFLARE_ACCOUNT_ID','SUPPORT_OWNER_EMAIL','SUPPORT_OWNER_LOGIN_CODE','OWNER_LOGIN_HASH','RATE_LIMIT_SECRET','RESEND_API_KEY','SUPPORT_EMAIL_FROM','EMAIL_FROM']){
     const secret=environment[key];
     if(secret)for(const form of new Set([secret,secret.toLowerCase(),secret.toUpperCase()]))text=text.split(form).join('[redacted]');
   }
@@ -23,3 +23,4 @@ export function runWrangler(args,{environment=process.env,spawn=spawnSync}={}){
   }
   return result.stdout;
 }
+

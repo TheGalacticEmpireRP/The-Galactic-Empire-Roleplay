@@ -8,6 +8,9 @@ export async function provision(env=process.env,request=fetch,write=writeFileSyn
   if(!owner||owner.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(owner))throw new Error('Add SUPPORT_OWNER_EMAIL to GitHub Actions secrets. Use your staff sign-in email.');
   const ownerCode=env.SUPPORT_OWNER_LOGIN_CODE?.trim().toLowerCase();
   if(!ownerCode||!/^[a-f0-9]{64}$/.test(ownerCode)||new Set(ownerCode).size<8)throw new Error('Add SUPPORT_OWNER_LOGIN_CODE to GitHub Actions secrets. Generate a private random code using owner-code.html; it must contain 64 hexadecimal characters.');
+  const resendKey=env.RESEND_API_KEY?.trim(),emailFrom=env.SUPPORT_EMAIL_FROM?.trim();
+  if(!!resendKey!==!!emailFrom)throw new Error('Set both RESEND_API_KEY and SUPPORT_EMAIL_FROM in GitHub Actions secrets to enable email alerts.');
+  if(emailFrom&&(!/^[^\r\n]+$/.test(emailFrom)||emailFrom.length>320||!/@[^\s<>]+\.[^\s<>]+/.test(emailFrom)))throw new Error('SUPPORT_EMAIL_FROM must be a verified sender address, optionally with a display name.');
   const ownerHash=createHash('sha256').update(`tge-staff-code:v1:${owner}:${ownerCode}`).digest('hex');
   let database=null;
   for(let page=1;page<=10;page++){
@@ -20,6 +23,9 @@ export async function provision(env=process.env,request=fetch,write=writeFileSyn
   if(!database)database=await api('d1/database','POST',{name:`${name}-tickets`,primary_location_hint:'weur'});
   if(!database?.uuid||!/^[a-f0-9-]{36}$/i.test(database.uuid))throw new Error('Cloudflare did not return a valid database ID.');
   const variables={
+    ...(project?.deployment_configs?.production?.env_vars||{}),
+    SUPPORT_BASE_URL:{type:'plain_text',value:`https://${name}.pages.dev`},
+    ...(resendKey?{RESEND_API_KEY:{type:'secret_text',value:resendKey},EMAIL_FROM:{type:'secret_text',value:emailFrom}}:{}),
     OWNER_EMAIL:{type:'secret_text',value:owner},
     RATE_LIMIT_SECRET:{type:'secret_text',value:randomBytes(32).toString('hex')},
     OWNER_LOGIN_HASH:{type:'secret_text',value:ownerHash}
@@ -43,3 +49,4 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   try{const result=await provision();console.log(`Support project prepared: ${result.name}. Built-in staff sign-in is configured.`);}
   catch(e){console.error(e.message);process.exitCode=1;}
 }
+
