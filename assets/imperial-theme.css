@@ -25,3 +25,6 @@
   html { scroll-behavior: auto !important; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* Square viewport removes transparent side margins without altering the emblem. */
+.brand-logo { display: block; width: 36px; height: 36px; flex-shrink: 0; object-fit: cover; object-position: center; }
