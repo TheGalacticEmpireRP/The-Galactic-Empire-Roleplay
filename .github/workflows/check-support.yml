@@ -2,9 +2,9 @@ name: Check Imperial Support
 on:
   push:
     branches: [main, feature/free-cloudflare-support]
-    paths: ['cloudflare-support/**', '.github/workflows/check-support.yml']
+    paths: ['cloudflare-support/**', 'assets/imperial-theme.css', '.github/workflows/check-support.yml']
   pull_request:
-    paths: ['cloudflare-support/**', '.github/workflows/check-support.yml']
+    paths: ['cloudflare-support/**', 'assets/imperial-theme.css', '.github/workflows/check-support.yml']
 permissions:
   contents: read
 jobs:

@@ -1,5 +1,8 @@
 name: Deploy Imperial Support to Cloudflare
 on:
+  push:
+    branches: [main]
+    paths: ['cloudflare-support/**', 'assets/imperial-theme.css', '.github/workflows/deploy-support.yml']
   workflow_dispatch:
     inputs:
       project_name:
@@ -36,7 +39,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           SUPPORT_OWNER_EMAIL: ${{ secrets.SUPPORT_OWNER_EMAIL }}
           SUPPORT_OWNER_LOGIN_CODE: ${{ secrets.SUPPORT_OWNER_LOGIN_CODE }}
-          SUPPORT_PROJECT_NAME: ${{ inputs.project_name }}
+          SUPPORT_PROJECT_NAME: ${{ inputs.project_name || 'tge-support' }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           SUPPORT_EMAIL_FROM: ${{ secrets.SUPPORT_EMAIL_FROM }}
           GMAIL_SENDER_URL: ${{ secrets.GMAIL_SENDER_URL }}

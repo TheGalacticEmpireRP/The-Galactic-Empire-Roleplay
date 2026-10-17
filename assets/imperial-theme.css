@@ -1,0 +1,27 @@
+/* Shared by the community website and the Cloudflare support application. */
+:root {
+  --tge-bg: #0b0b0c;
+  --tge-surface: #111113;
+  --tge-surface-raised: #18181b;
+  --tge-line: #29292e;
+  --tge-text: #eeeeF2;
+  --tge-muted: #a3a3ae;
+  --tge-dim: #81818e;
+  --tge-accent: #e53945;
+  --tge-accent-soft: #ff7b84;
+  --tge-font: Inter, Arial, sans-serif;
+  --tge-display: Oswald, Impact, 'Arial Narrow', sans-serif;
+  --tge-ease: cubic-bezier(.22, 1, .36, 1);
+}
+@keyframes tge-enter {
+  from { opacity: 0; transform: translate3d(0, 18px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes tge-image-enter {
+  from { opacity: 0; transform: scale(1.035); }
+  to { opacity: 1; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

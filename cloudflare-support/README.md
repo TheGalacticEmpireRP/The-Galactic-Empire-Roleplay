@@ -4,6 +4,15 @@ This is the complete Galactic Empire support portal prepared for Cloudflare Page
 
 The public free address is **https://tge-support.pages.dev**. The name is selected when creating the Pages project. A custom domain is optional. Deployment never changes the existing website links automatically.
 
+
+## Community website integration
+
+The community website and this portal share `../assets/imperial-theme.css`. Vite bundles those tokens into the support stylesheet, so visitors do not need to load styles from another host.
+
+`GET /api/support/public-info` returns only public category names, descriptions, and relative navigation links. The community website may read this directory through a CORS allowlist for `https://thegalacticempirerp.github.io`. It sends no cookies or private ticket credentials. Existing ticket and staff endpoints retain their own access checks.
+
+Pushing support source or shared theme changes to `main` automatically runs **Deploy Imperial Support to Cloudflare** with the existing `tge-support` project. Manual workflow runs remain available. Deployment reuses the existing database and encrypted secrets; it does not migrate or copy tickets between hosts.
+
 ## Publish from GitHub
 
 1. Create or sign in to your [Cloudflare account](https://dash.cloudflare.com/sign-up). Keep Workers/Pages and D1 on their free plans.

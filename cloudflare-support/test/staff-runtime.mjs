@@ -38,6 +38,14 @@ try{
     assert.equal(page.cacheControl,'private, no-store');
     assert.match(page.data,/<html/);
   }
+  const directory=await runtime.dispatchFetch('https://support.test/api/support/public-info',{headers:{Origin:'https://thegalacticempirerp.github.io'}});
+  assert.equal(directory.status,200);
+  assert.equal(directory.headers.get('Access-Control-Allow-Origin'),'https://thegalacticempirerp.github.io');
+  assert.equal(directory.headers.get('Access-Control-Allow-Credentials'),null);
+  const publicInfo=await directory.json();
+  assert.equal(publicInfo.service,'tge-support');
+  assert.equal(publicInfo.categories.length,4);
+  assert.equal(publicInfo.staff,undefined);
   assert.equal((await send('/api/support/staff/tickets')).status,403);
   const owner=await send('/api/support/auth/login','POST',{email,code});assert.equal(owner.status,200);assert.ok(owner.cookie);
   assert.equal((await send('/api/support/session','GET',undefined,owner.cookie)).data.staff.role,'owner');

@@ -2,6 +2,7 @@ import type {EmailEnv} from "../lib/email";
 import {handleSupport} from "../lib/service";
 import {createStaffAuth,type StaffAuthEnv} from "./staff-auth";
 import {D1Evidence} from "./evidence";
+import {publicSupportInfo} from "../lib/public-info";
 export type Env=StaffAuthEnv&EmailEnv&{ASSETS:Fetcher};
 const secure=(response:Response)=>{
   const result=new Response(response.body,response);
@@ -14,6 +15,7 @@ const secure=(response:Response)=>{
 export default {
   async fetch(request:Request,env:Env):Promise<Response>{
     const path=new URL(request.url).pathname;
+    if(path==="/api/support/public-info")return secure(publicSupportInfo(request));
     if(path==="/api/support"||path.startsWith("/api/support/")){
       const auth=createStaffAuth(request,env);
       if(path.startsWith("/api/support/auth/"))return secure(await auth.handle());
