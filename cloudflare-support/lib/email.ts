@@ -1,11 +1,14 @@
-export type EmailEnv={RESEND_API_KEY?:string;EMAIL_FROM?:string;SUPPORT_BASE_URL?:string};
+import {gmailConfigured,sendGmail,type GmailEnv} from "./gmail";
+export type EmailEnv=GmailEnv&{RESEND_API_KEY?:string;EMAIL_FROM?:string;SUPPORT_BASE_URL?:string;EMAIL_PROVIDER?:string};
 export type EmailResult="sent"|"failed"|"not_enabled"|"pending";
 const DAY=86400000;
 const token=()=>[...crypto.getRandomValues(new Uint8Array(32))].map(n=>n.toString(16).padStart(2,"0")).join("");
 const hash=async(s:string)=>[...new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)))].map(n=>n.toString(16).padStart(2,"0")).join("");
 const escape=(s:string)=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]!));
 export function emailConfigured(env:EmailEnv){
-  if(!env.RESEND_API_KEY?.trim()||!env.EMAIL_FROM?.trim()||/[\r\n]/.test(env.EMAIL_FROM))return false;
+  if(!env.EMAIL_FROM?.trim()||/[\r\n]/.test(env.EMAIL_FROM))return false;
+  if(env.EMAIL_PROVIDER==="gmail"||(!env.EMAIL_PROVIDER&&env.GMAIL_SENDER_URL)){if(!gmailConfigured(env))return false;}
+  else if(env.EMAIL_PROVIDER&&env.EMAIL_PROVIDER!=="resend"||!env.RESEND_API_KEY?.trim())return false;
   try{const u=new URL(env.SUPPORT_BASE_URL||"");return u.protocol==="https:"&&!u.username&&!u.password&&u.pathname==="/"&&!u.search&&!u.hash;}catch{return false;}
 }
 function link(env:EmailEnv,params:Record<string,string>){
@@ -18,6 +21,7 @@ function render(title:string,reference:string,body:string,url:string,button:stri
 }
 async function send(env:EmailEnv,to:string,subject:string,content:{text:string;html:string},idempotencyKey:string,request:typeof fetch=fetch){
   if(!emailConfigured(env))throw new Error("email_not_configured");
+  if(env.EMAIL_PROVIDER==="gmail"||(!env.EMAIL_PROVIDER&&env.GMAIL_SENDER_URL))return sendGmail(env,to,subject,content,idempotencyKey,request);
   const response=await request("https://api.resend.com/emails",{
     method:"POST",headers:{Authorization:`Bearer ${env.RESEND_API_KEY}`,"Content-Type":"application/json","Idempotency-Key":idempotencyKey},
     body:JSON.stringify({from:env.EMAIL_FROM,to:[to],subject,...content}),signal:AbortSignal.timeout(8000)

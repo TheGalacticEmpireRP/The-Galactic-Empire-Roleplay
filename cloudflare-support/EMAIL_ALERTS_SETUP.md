@@ -1,5 +1,7 @@
 # Activate member email alerts
 
+**No purchased domain?** Use the [Gmail sender setup](GMAIL_SETUP.md). It works with your own Gmail account after you authorize a small Google Apps Script sender. The Resend setup below remains available for a verified domain.
+
 This update adds email alerts when support staff send a **public reply** to a ticket. New and existing tickets support them. Members enter their email and confirm an emailed link before alerts begin. Staff notes, member messages, assignments and status-only changes do not send email.
 
 The code is ready, but email delivery requires your sending account to be configured and the updated portal to be deployed. No real email has been sent as part of the automated tests.

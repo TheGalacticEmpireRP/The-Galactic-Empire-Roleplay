@@ -9,7 +9,10 @@ export async function provision(env=process.env,request=fetch,write=writeFileSyn
   const ownerCode=env.SUPPORT_OWNER_LOGIN_CODE?.trim().toLowerCase();
   if(!ownerCode||!/^[a-f0-9]{64}$/.test(ownerCode)||new Set(ownerCode).size<8)throw new Error('Add SUPPORT_OWNER_LOGIN_CODE to GitHub Actions secrets. Generate a private random code using owner-code.html; it must contain 64 hexadecimal characters.');
   const resendKey=env.RESEND_API_KEY?.trim(),emailFrom=env.SUPPORT_EMAIL_FROM?.trim();
-  if(!!resendKey!==!!emailFrom)throw new Error('Set both RESEND_API_KEY and SUPPORT_EMAIL_FROM in GitHub Actions secrets to enable email alerts.');
+  const gmailUrl=env.GMAIL_SENDER_URL?.trim(),gmailSecret=env.GMAIL_SENDER_SECRET?.trim();
+  if(!!gmailUrl!==!!gmailSecret)throw new Error('Set both GMAIL_SENDER_URL and GMAIL_SENDER_SECRET in GitHub Actions secrets.');
+  if(gmailUrl&&(!/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]{20,}\/exec$/.test(gmailUrl)||!/^[a-f0-9]{64}$/.test(gmailSecret)||!emailFrom))throw new Error('Gmail needs a deployed Apps Script /exec URL, a separate random 64-character sender secret, and SUPPORT_EMAIL_FROM.');
+  if(!gmailUrl&&!!resendKey!==!!emailFrom)throw new Error('Set both RESEND_API_KEY and SUPPORT_EMAIL_FROM in GitHub Actions secrets to enable email alerts.');
   if(emailFrom&&(!/^[^\r\n]+$/.test(emailFrom)||emailFrom.length>320||!/@[^\s<>]+\.[^\s<>]+/.test(emailFrom)))throw new Error('SUPPORT_EMAIL_FROM must be a verified sender address, optionally with a display name.');
   const ownerHash=createHash('sha256').update(`tge-staff-code:v1:${owner}:${ownerCode}`).digest('hex');
   let database=null;
@@ -25,7 +28,7 @@ export async function provision(env=process.env,request=fetch,write=writeFileSyn
   const variables={
     ...(project?.deployment_configs?.production?.env_vars||{}),
     SUPPORT_BASE_URL:{type:'plain_text',value:`https://${name}.pages.dev`},
-    ...(resendKey?{RESEND_API_KEY:{type:'secret_text',value:resendKey},EMAIL_FROM:{type:'secret_text',value:emailFrom}}:{}),
+    ...(gmailUrl?{EMAIL_PROVIDER:{type:'plain_text',value:'gmail'},GMAIL_SENDER_URL:{type:'secret_text',value:gmailUrl},GMAIL_SENDER_SECRET:{type:'secret_text',value:gmailSecret},EMAIL_FROM:{type:'secret_text',value:emailFrom}}:resendKey?{EMAIL_PROVIDER:{type:'plain_text',value:'resend'},RESEND_API_KEY:{type:'secret_text',value:resendKey},EMAIL_FROM:{type:'secret_text',value:emailFrom}}:{}),
     OWNER_EMAIL:{type:'secret_text',value:owner},
     RATE_LIMIT_SECRET:{type:'secret_text',value:randomBytes(32).toString('hex')},
     OWNER_LOGIN_HASH:{type:'secret_text',value:ownerHash}

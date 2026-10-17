@@ -22,7 +22,7 @@ The public free address is **https://tge-support.pages.dev**. The name is select
 
 ## Member email reply alerts
 
-See [EMAIL_ALERTS_SETUP.md](EMAIL_ALERTS_SETUP.md) to connect the sender and activate email notifications. Members can add an address on a new ticket or inside an existing conversation. The feature is disabled until an email provider is configured.
+For a Gmail account without buying a domain, use [GMAIL_SETUP.md](GMAIL_SETUP.md). For Resend with a verified domain, use [EMAIL_ALERTS_SETUP.md](EMAIL_ALERTS_SETUP.md). Members can add an address on a new ticket or inside an existing conversation. The feature is disabled until an email provider is configured.
 
 ## Built-in staff sign-in
 
