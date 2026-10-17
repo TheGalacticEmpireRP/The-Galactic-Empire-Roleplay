@@ -1,40 +1,21 @@
 # The Galactic Empire — Roblox Roleplay Website
 
-A complete static website ready for GitHub Pages.
+The public TGE community website is a buildless HTML, CSS, and JavaScript site hosted with GitHub Pages:
 
-## Set your Discord and Roblox links
-Open `script.js` and replace:
+https://thegalacticempirerp.github.io/The-Galactic-Empire-Roleplay/
 
-```js
-const LINKS = {
-  discord: "#",
-  roblox: "#"
-};
-```
+## Website files
 
-with your real URLs.
+- `index.html`: navigation, featured experience, community dispatches, divisions, leadership, support links, member guide, and footer.
+- `style.css`: responsive dark layout, red TGE accents, hover and focus states, and reduced-motion support.
+- `script.js`: mobile navigation, active section highlighting, and local keyboard-accessible search (`Ctrl+K` / `⌘K`).
+- `assets/`: existing TGE artwork and favicon.
+- `support.html`: compatibility shortcut to `https://tge-support.pages.dev/`, preserving supported category and tracking parameters.
 
-## Publish on GitHub Pages
-1. Create a new GitHub repository.
-2. Upload **everything inside this folder** (`index.html`, `style.css`, `script.js`, and the `assets` folder).
-3. In GitHub, open **Settings → Pages**.
-4. Under **Build and deployment**, choose **Deploy from a branch**.
-5. Select your main branch and `/ (root)`.
-6. Save. GitHub will provide your public website URL.
+The homepage uses the existing community and founder links directly in HTML, so navigation does not depend on JavaScript. Google Fonts supplies Inter and Oswald with local font fallbacks. Search operates within the public site and does not send queries to a server.
 
-## Important: images
-All images use relative paths like `assets/main-logo.png`, so they will load correctly on GitHub Pages as long as the `assets` folder is uploaded together with the HTML/CSS/JS files.
+## Publishing
 
-## Included
-- Animated loading screen
-- Custom animated cursor
-- Responsive navigation
-- Cinematic hero section
-- Scroll reveal effects
-- Parallax backgrounds
-- 3D division card hover effects
-- 8 division cards using your uploaded artwork
-- Founder / Co-Founder section
-- FAQ accordion
-- Roblox and Discord call-to-action buttons
-- Mobile responsive layout
+GitHub Pages publishes the `main` branch from the repository root. Keep assets and relative paths together. The website has no package installation or build step.
+
+The separate `cloudflare-support/` application and its workflows are documented in `SUPPORT_SETUP.md` and that application's README. Homepage styling does not change the support application's ticket data or staff configuration.

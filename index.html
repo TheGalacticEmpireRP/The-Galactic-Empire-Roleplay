@@ -1,173 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#08090d" />
-  <meta name="description" content="The Galactic Empire — a Roblox roleplay community." />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0b0c">
+  <meta name="description" content="The Galactic Empire is a Roblox military roleplay community. Explore our divisions, meet Imperial leadership, and find your place in the Empire.">
+  <meta property="og:title" content="The Galactic Empire | Roblox Roleplay">
+  <meta property="og:description" content="Order. Strength. Loyalty. Your path through the Galactic Empire begins here.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://thegalacticempirerp.github.io/The-Galactic-Empire-Roleplay/assets/hero-bg.jpg">
   <title>The Galactic Empire | Roblox Roleplay</title>
+  <script>document.documentElement.classList.add('js');</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/hero-bg.jpg" as="image">
+  <link rel="stylesheet" href="style.css?v=20261017">
+  <script src="script.js?v=20261017" defer></script>
 </head>
-<body>
-  <div id="loader" class="loader" aria-hidden="true">
-    <div class="loader-emblem">
-      <div class="loader-ring"></div>
-      <div class="loader-core">TGE</div>
+<body id="top">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#home" aria-label="The Galactic Empire home"><span class="brand-mark" aria-hidden="true">TGE<span></span></span><span class="brand-name">The Galactic Empire</span></a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation" aria-label="Open navigation"><span></span><span></span><span></span></button>
+      <nav class="site-nav" id="site-navigation" aria-label="Main navigation">
+        <div class="nav-links">
+          <a class="nav-link is-active" href="#home" data-nav="home" aria-current="page">Home</a>
+          <a class="nav-link" href="#divisions" data-nav="divisions">Divisions</a>
+          <details class="nav-dropdown">
+            <summary class="nav-link" data-nav="community">Community <svg class="chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"/></svg></summary>
+            <div class="dropdown-panel">
+              <a href="#about"><strong>About the Empire</strong><span>Our community and your path.</span></a>
+              <a href="#leadership"><strong>Leadership</strong><span>Meet the founders.</span></a>
+              <a href="#faq"><strong>Member guide</strong><span>Answers before you deploy.</span></a>
+              <a href="https://www.roblox.com/games/81256905377127/The-Galactic-Empire-Hub" target="_blank" rel="noopener noreferrer"><strong>Experience hub <span aria-hidden="true">↗</span></strong><span>Explore TGE on Roblox.</span></a>
+            </div>
+          </details>
+          <a class="nav-link" href="#support" data-nav="support">Support</a>
+          <button class="search-trigger" type="button" aria-haspopup="dialog" aria-controls="site-search"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4 4"/></svg><span>Search</span><kbd>Ctrl K</kbd></button>
+        </div>
+        <div class="nav-actions">
+          <a class="nav-discord" href="https://discord.gg/esWScG4bxZ" target="_blank" rel="noopener noreferrer">Discord <span aria-hidden="true">↗</span></a>
+          <a class="button button-light button-small" href="https://www.roblox.com/communities/320324404/TGE-The-GaIactic-Emp-re#!/about" target="_blank" rel="noopener noreferrer">Join Empire</a>
+        </div>
+      </nav>
     </div>
-    <p class="loader-title">THE GALACTIC EMPIRE</p>
-    <div class="loader-track"><span></span></div>
-    <p class="loader-status">INITIALIZING IMPERIAL NETWORK...</p>
-  </div>
-
-  <div class="cursor-dot"></div>
-  <div class="cursor-ring"></div>
-
-  <div class="noise"></div>
-  <div class="scanlines"></div>
-
-  <header class="site-header" id="top">
-    <a class="brand" href="#top" aria-label="The Galactic Empire home">
-      <span class="brand-mark">TGE</span>
-      <span class="brand-copy"><b>The Galactic Empire</b><small>Roblox Roleplay</small></span>
-    </a>
-    <button class="menu-toggle" aria-label="Open navigation"><span></span><span></span></button>
-    <nav class="nav-links">
-      <a href="#about">About</a>
-      <a href="#divisions">Divisions</a>
-      <a href="#leadership">Leadership</a>
-      <a href="#faq">FAQ</a>
-      <a href="support.html">Support</a>
-      <a class="nav-cta roblox-link" href="#" target="_blank" rel="noreferrer">Join Empire</a>
-    </nav>
   </header>
-
-  <main>
-    <section class="hero" id="home">
-      <div class="hero-bg" data-parallax="0.15"></div>
-      <div class="hero-shade"></div>
-      <div class="hero-grid"></div>
-      <div class="hero-content reveal">
-        <div class="eyebrow"><span></span> IMPERIAL TRANSMISSION // ACTIVE</div>
-        <h1>ORDER.<br><span>LOYALTY.</span><br>DOMINION.</h1>
-        <p>Enter a cinematic Galactic Empire roleplay experience built around discipline, progression, elite divisions, and a living Imperial community on Roblox.</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary roblox-link" href="#" target="_blank" rel="noreferrer"><span>Enter the Empire</span><i>↗</i></a>
-          <a class="btn btn-ghost discord-link" href="#" target="_blank" rel="noreferrer"><span>Join Discord</span><i>→</i></a>
+  <main id="main">
+    <section class="hero" id="home" aria-labelledby="hero-title">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> ROBLOX ROLEPLAY</p>
+          <h1 id="hero-title">THE GALACTIC<br>EMPIRE</h1>
+          <p class="hero-description">Step into a galaxy shaped by order and ambition. Serve in elite divisions, rise through the Imperial ranks, and build your story with our Roblox roleplay community.</p>
+          <div class="hero-actions"><a class="button button-primary" href="#about">Discover the Empire <span aria-hidden="true">→</span></a><a class="text-link" href="https://www.roblox.com/games/81256905377127/The-Galactic-Empire-Hub" target="_blank" rel="noopener noreferrer">Play on Roblox <span aria-hidden="true">↗</span></a></div>
         </div>
-        <div class="hero-meta">
-          <div><strong>08</strong><span>Elite Divisions</span></div>
-          <div><strong>24/7</strong><span>Community Access</span></div>
-          <div><strong>ONE</strong><span>Galactic Empire</span></div>
-        </div>
+        <figure class="hero-art"><img src="assets/hero-bg.jpg" alt="Roblox troopers and a lightsaber wielder face off aboard an Imperial station" width="1200" height="675" fetchpriority="high"><figcaption><span>TGE / THE GALACTIC EMPIRE</span><span>ORDER. STRENGTH. LOYALTY.</span></figcaption></figure>
       </div>
-      <div class="hero-logo-wrap" data-parallax="0.08">
-        <img src="assets/main-logo.png" alt="Darth Vader Imperial artwork" class="hero-logo" />
-        <div class="hero-logo-glow"></div>
-      </div>
-      <a href="#about" class="scroll-cue"><span>SCROLL</span><i></i></a>
     </section>
-
-    <section class="section intro" id="about">
-      <div class="section-kicker reveal">01 // IMPERIAL DIRECTIVE</div>
-      <div class="intro-grid">
-        <div class="reveal">
-          <h2>Serve the Empire.<br><span>Shape the Galaxy.</span></h2>
-        </div>
-        <div class="intro-copy reveal">
-          <p>The Galactic Empire is a Roblox military roleplay community focused on immersive events, structured progression, competitive divisions, and a professional command hierarchy.</p>
-          <p>Whether you fight on the front line, protect Imperial leadership, hunt enemies of the state, or operate in covert units, your path through the Empire begins here.</p>
+    <section class="dispatches section-bordered" aria-labelledby="dispatches-title">
+      <div class="container">
+        <div class="section-heading compact-heading"><h2 id="dispatches-title">From the Empire</h2><a class="text-link" href="https://discord.gg/esWScG4bxZ" target="_blank" rel="noopener noreferrer">Community updates <span aria-hidden="true">↗</span></a></div>
+        <div class="dispatch-list">
+          <a class="dispatch-row" href="support.html"><div class="dispatch-meta"><span>Member services</span><span class="category-label">Support</span></div><div class="dispatch-copy"><h3>A direct line to Imperial Support</h3><p>Get help, explore career opportunities, submit a report, or request an appeal through the TGE Support Center.</p></div><span class="row-arrow" aria-hidden="true">↗</span></a>
+          <a class="dispatch-row" href="#divisions"><div class="dispatch-meta"><span>Find your path</span><span class="category-label">Divisions</span></div><div class="dispatch-copy"><h3>Eight divisions. One Empire.</h3><p>From frontline operations to Imperial intelligence, discover the branch that fits your roleplay style.</p></div><span class="row-arrow" aria-hidden="true">→</span></a>
         </div>
       </div>
-      <div class="feature-strip reveal">
-        <div><span>01</span><b>Structured Progression</b><p>Rise through ranks by activity, performance, and loyalty.</p></div>
-        <div><span>02</span><b>Specialized Divisions</b><p>Choose an elite path suited to your roleplay style.</p></div>
-        <div><span>03</span><b>Immersive Events</b><p>Deployments, trainings, ceremonies, operations, and more.</p></div>
+    </section>
+    <div class="empire-facts section-bordered" aria-label="Our community at a glance"><div class="container facts-grid"><div><span>IMPERIAL DIVISIONS</span><strong>08</strong></div><div><span>COMMUNITY FOUNDERS</span><strong>02</strong></div><div><span>ONE SHARED PURPOSE</span><strong>THE EMPIRE</strong></div></div></div>
+    <section class="section about-section" id="about" aria-labelledby="about-title">
+      <div class="container about-grid"><div><p class="eyebrow">OUR COMMUNITY</p><h2 class="section-title" id="about-title">Your story.<br> Our Empire.</h2></div><div class="about-copy"><p class="lead">The Galactic Empire is a Roblox military roleplay community built around discipline, progression, and a shared passion for the Star Wars galaxy.</p><p>Train with your division, take part in operations, and earn your place in the Imperial ranks. Whether you are stepping into roleplay for the first time or looking for a specialized unit, there is a path for you here.</p><a class="text-link" href="https://www.roblox.com/communities/320324404/TGE-The-GaIactic-Emp-re#!/about" target="_blank" rel="noopener noreferrer">Become part of TGE <span aria-hidden="true">↗</span></a></div></div>
+    </section>
+    <section class="section section-bordered" id="divisions" aria-labelledby="divisions-title">
+      <div class="container">
+        <div class="section-heading"><div><p class="eyebrow">IMPERIAL BRANCHES</p><h2 class="section-title" id="divisions-title">Find your division.</h2></div><p>Different specialties. The same commitment.</p></div>
+        <div class="division-grid">
+          <a class="division-card" href="https://www.roblox.com/communities/824868680" target="_blank" rel="noopener noreferrer"><div class="division-image"><img src="assets/royal-guard.png" alt="Royal Guard Roblox character artwork" width="1024" height="1024" loading="lazy" decoding="async"><span class="division-number">01</span></div><div class="division-copy"><span class="division-type">IMPERIAL ELITE</span><h3>Royal Guard <span aria-hidden="true">↗</span></h3><p>Protect the highest authority of the Empire with absolute loyalty.</p></div></a>
+          <a class="division-card" href="https://www.roblox.com/communities/861852270" target="_blank" rel="noopener noreferrer"><div class="division-image"><img src="assets/isb.png" alt="Imperial Security Bureau Roblox character artwork" width="1024" height="1024" loading="lazy" decoding="async"><span class="division-number">02</span></div><div class="division-copy"><span class="division-type">INTELLIGENCE</span><h3>Imperial Security Bureau <span aria-hidden="true">↗</span></h3><p>Secure Imperial order through intelligence and internal security.</p></div></a>
+          <a class="division-card" href="https://www.roblox.com/communities/959711619" target="_blank" rel="noopener noreferrer"><div class="division-image"><img src="assets/501st.png" alt="501st Legion Roblox character artwork" width="1024" height="1024" loading="lazy" decoding="async"><span class="division-number">03</span></div><div class="division-copy"><span class="division-type">FRONTLINE</span><h3>501st Legion <span aria-hidden="true">↗</span></h3><p>Fight on the front line with one of the Empire's premier formations.</p></div></a>
+          <a class="division-card" href="https://www.roblox.com/communities/783088940" target="_blank" rel="noopener noreferrer"><div class="division-image"><img src="assets/shock-troopers.png" alt="Shock Troopers Roblox character artwork" width="1024" height="1024" loading="lazy" decoding="async"><span class="division-number">04</span></div><div class="division-copy"><span class="division-type">SECURITY FORCE</span><h3>Shock Troopers <span aria-hidden="true">↗</span></h3><p>Defend Imperial assets and maintain order in high-risk zones.</p></div></a>
+          <a class="division-card" href="https://www.roblox.com/communities/337987517" target="_blank" rel="noopener noreferrer"><div class="division-image"><img src="assets/inquisitors.png" alt="Inquisitor Roblox character artwork" width="1024" height="1024" loading="lazy" decoding="async"><span class="division-number">05</span></div><div class="division-copy"><span class="division-type">FORCE HUNTERS</span><h3>Inquisitors <span aria-hidden="true">↗</span></h3><p>Hunt Force-sensitive threats to Imperial supremacy.</p></div></a>
+          <a class="division-card" href="https://www.roblox.com/communities/475801271" target="_blank" rel="noopener noreferrer"><div class="division-image"><img src="assets/purge-troopers.png" alt="Purge Trooper Roblox character artwork" width="1024" height="1024" loading="lazy" decoding="async"><span class="division-number">06</span></div><div class="division-copy"><span class="division-type">ANTI-JEDI UNIT</span><h3>Purge Troopers <span aria-hidden="true">↗</span></h3><p>Support Inquisitorial operations with specialized combat training.</p></div></a>
+          <a class="division-card" href="https://www.roblox.com/communities/675191410" target="_blank" rel="noopener noreferrer"><div class="division-image"><img src="assets/death-troopers.png" alt="Death Trooper Roblox character artwork" width="1024" height="1024" loading="lazy" decoding="async"><span class="division-number">07</span></div><div class="division-copy"><span class="division-type">SPECIAL FORCES</span><h3>Death Troopers <span aria-hidden="true">↗</span></h3><p>Execute high-value operations with precision and discipline.</p></div></a>
+          <a class="division-card" href="https://www.roblox.com/communities/595144619" target="_blank" rel="noopener noreferrer"><div class="division-image"><img src="assets/imperial-commandos.png" alt="Imperial Commando Roblox character artwork" width="1024" height="1024" loading="lazy" decoding="async"><span class="division-number">08</span></div><div class="division-copy"><span class="division-type">TACTICAL OPERATIONS</span><h3>Imperial Commandos <span aria-hidden="true">↗</span></h3><p>Deploy with a highly trained unit for specialized missions.</p></div></a>
+        </div>
+        <p class="section-note">Applications, tryouts, and entry requirements are managed by division leadership. Visit Discord for current recruitment information.</p>
       </div>
     </section>
-
-    <section class="section divisions-section" id="divisions">
-      <div class="section-head reveal">
-        <div><div class="section-kicker">02 // IMPERIAL BRANCHES</div><h2>Choose your <span>division.</span></h2></div>
-        <p>Eight branches. Eight paths. One Empire.</p>
-      </div>
-      <div class="division-grid">
-        <article class="division-card reveal" data-name="ROYAL GUARD"><img src="assets/royal-guard.png" alt="Royal Guard" loading="lazy"><div class="card-overlay"></div><div class="card-index">01</div><div class="card-copy"><small>IMPERIAL ELITE</small><h3>Royal Guard</h3><p>Protect the highest authority of the Empire with absolute loyalty.</p></div></article>
-        <article class="division-card reveal" data-name="IMPERIAL SECURITY BUREAU"><img src="assets/isb.png" alt="Imperial Security Bureau" loading="lazy"><div class="card-overlay"></div><div class="card-index">02</div><div class="card-copy"><small>INTELLIGENCE</small><h3>Imperial Security Bureau</h3><p>Secure Imperial order through intelligence, enforcement, and internal security.</p></div></article>
-        <article class="division-card reveal" data-name="501ST LEGION"><img src="assets/501st.png" alt="501st Legion" loading="lazy"><div class="card-overlay"></div><div class="card-index">03</div><div class="card-copy"><small>FRONTLINE</small><h3>501st Legion</h3><p>Serve in one of the Empire's premier frontline combat formations.</p></div></article>
-        <article class="division-card reveal" data-name="SHOCK TROOPERS"><img src="assets/shock-troopers.png" alt="Shock Troopers" loading="lazy"><div class="card-overlay"></div><div class="card-index">04</div><div class="card-copy"><small>SECURITY FORCE</small><h3>Shock Troopers</h3><p>Maintain security, defend Imperial assets, and control high-risk zones.</p></div></article>
-        <article class="division-card reveal" data-name="INQUISITORS"><img src="assets/inquisitors.png" alt="Inquisitors" loading="lazy"><div class="card-overlay"></div><div class="card-index">05</div><div class="card-copy"><small>FORCE HUNTERS</small><h3>Inquisitors</h3><p>Track and eliminate Force-sensitive threats to Imperial supremacy.</p></div></article>
-        <article class="division-card reveal" data-name="PURGE TROOPERS"><img src="assets/purge-troopers.png" alt="Purge Troopers" loading="lazy"><div class="card-overlay"></div><div class="card-index">06</div><div class="card-copy"><small>ANTI-JEDI UNIT</small><h3>Purge Troopers</h3><p>Elite soldiers trained to support Inquisitorial operations.</p></div></article>
-        <article class="division-card reveal" data-name="DEATH TROOPERS"><img src="assets/death-troopers.png" alt="Death Troopers" loading="lazy"><div class="card-overlay"></div><div class="card-index">07</div><div class="card-copy"><small>SPECIAL FORCES</small><h3>Death Troopers</h3><p>Execute high-value operations requiring precision and discipline.</p></div></article>
-        <article class="division-card reveal" data-name="IMPERIAL COMMANDOS"><img src="assets/imperial-commandos.png" alt="Imperial Commandos" loading="lazy"><div class="card-overlay"></div><div class="card-index">08</div><div class="card-copy"><small>TACTICAL OPERATIONS</small><h3>Imperial Commandos</h3><p>Deploy as a highly trained tactical unit for specialized missions.</p></div></article>
+    <section class="section section-bordered" id="leadership" aria-labelledby="leadership-title">
+      <div class="container"><div class="section-heading"><div><p class="eyebrow">BEHIND THE EMPIRE</p><h2 class="section-title" id="leadership-title">Imperial leadership.</h2></div><p>The founders of our community.</p></div><div class="leader-grid">
+        <a class="leader-card" href="https://www.roblox.com/users/2423467419/profile" target="_blank" rel="noopener noreferrer"><span class="leader-avatar" aria-hidden="true">Z</span><div><p class="eyebrow">FOUNDER</p><h3>Z4cKtbh</h3><p>Founder &amp; Imperial Command</p></div><span class="row-arrow" aria-hidden="true">↗</span></a>
+        <a class="leader-card" href="https://www.roblox.com/users/2383410516/profile" target="_blank" rel="noopener noreferrer"><span class="leader-avatar" aria-hidden="true">S</span><div><p class="eyebrow">CO-FOUNDER</p><h3>ShadowflyplayzYT</h3><p>Co-Founder &amp; Imperial Command</p></div><span class="row-arrow" aria-hidden="true">↗</span></a>
+      </div></div>
+    </section>
+    <section class="section section-bordered" id="support" aria-labelledby="support-title">
+      <div class="container"><div class="section-heading"><div><p class="eyebrow">HERE TO HELP</p><h2 class="section-title" id="support-title">Your voice. Our priority.</h2></div><a class="text-link" href="support.html?view=track">Track a ticket <span aria-hidden="true">↗</span></a></div><p class="section-intro">Open a private ticket and continue the conversation with the right team.</p>
+        <div class="support-grid">
+          <a class="support-card" href="support.html?category=careers"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3M3 12a22 22 0 0 0 18 0M12 11v4"/></svg><h3>Careers</h3><p>Staff applications, officer opportunities, and leadership enquiries.</p><span class="card-link">Explore opportunities <span aria-hidden="true">↗</span></span></a>
+          <a class="support-card" href="support.html?category=reports"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 3v6c0 5-8 9-8 9S4 17 4 12V6l8-3ZM12 8v5M12 16v.1"/></svg><h3>Staff &amp; Member reports</h3><p>Raise a concern about misconduct or abuse of authority.</p><span class="card-link">Submit a report <span aria-hidden="true">↗</span></span></a>
+          <a class="support-card" href="support.html?category=general"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13v-1a8 8 0 0 1 16 0v1M20 17v1a3 3 0 0 1-3 3h-4"/><rect x="2" y="12" width="5" height="7" rx="2"/><rect x="17" y="12" width="5" height="7" rx="2"/></svg><h3>General Support</h3><p>Help with game issues, ranks, progression, and community questions.</p><span class="card-link">Get support <span aria-hidden="true">↗</span></span></a>
+          <a class="support-card" href="support.html?category=appeals"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v6h6M4 10a8 8 0 1 1 0 5M12 7v5l3 2"/></svg><h3>Appeals</h3><p>Request a review of a ban, blacklist, warning, or other sanction.</p><span class="card-link">Request a review <span aria-hidden="true">↗</span></span></a>
+        </div><p class="section-note">Keep your ticket receipt to check replies. Our support team is made up of volunteers; response times vary.</p>
       </div>
     </section>
-
-    <section class="cinematic-banner">
-      <div class="cinematic-bg" data-parallax="0.12"></div>
-      <div class="cinematic-overlay"></div>
-      <div class="cinematic-content reveal">
-        <div class="section-kicker">THE GALAXY REQUIRES ORDER</div>
-        <h2>Your service begins <span>now.</span></h2>
-        <p>Join the community, choose your path, and earn your place within the Imperial ranks.</p>
-        <a class="btn btn-primary discord-link" href="#" target="_blank" rel="noreferrer"><span>Join the Community</span><i>↗</i></a>
-      </div>
+    <section class="section section-bordered" id="faq" aria-labelledby="faq-title">
+      <div class="container faq-grid"><div><p class="eyebrow">MEMBER GUIDE</p><h2 class="section-title" id="faq-title">Before you<br> deploy.</h2><p class="faq-intro">New to the Empire? Start here.</p><a class="text-link" href="support.html?category=general">Ask the support team <span aria-hidden="true">↗</span></a></div><div class="faq-list">
+        <details><summary>How do I join The Galactic Empire?<span aria-hidden="true">+</span></summary><p>Join our Roblox group and Discord community using the links on this website. Follow the recruitment and verification instructions provided by command staff.</p></details>
+        <details><summary>Do I need roleplay experience?<span aria-hidden="true">+</span></summary><p>No. New members can learn through training, events, and guidance from division leadership. Activity, discipline, and a willingness to improve matter most.</p></details>
+        <details><summary>How do I join a division?<span aria-hidden="true">+</span></summary><p>Entry requirements vary by division and may include applications, tryouts, academies, or rank requirements. Check Discord for current recruitment information.</p></details>
+        <details><summary>Can I join more than one division?<span aria-hidden="true">+</span></summary><p>Follow the current division membership rules published by High Command. Division leadership can explain any restrictions or exceptions before you apply.</p></details>
+        <details><summary>What happens at community events?<span aria-hidden="true">+</span></summary><p>Events can include training, patrols, raids, deployments, ceremonies, simulations, inspections, and larger roleplay operations.</p></details>
+      </div></div>
     </section>
-
-    <section class="section leadership" id="leadership">
-      <div class="section-head reveal">
-        <div><div class="section-kicker">03 // HIGH COMMAND</div><h2>Imperial <span>leadership.</span></h2></div>
-        <p>Founded and led by the command team behind the Empire.</p>
-      </div>
-      <div class="leader-grid">
-        <a class="leader-card reveal" href="https://www.roblox.com/users/2423467419/profile" target="_blank" rel="noreferrer">
-          <div class="leader-number">01</div><div class="leader-avatar">Z</div><div class="leader-copy"><small>FOUNDER</small><h3>Z4cKtbh</h3><p>Founder & Imperial Command</p></div><span class="leader-arrow">↗</span>
-        </a>
-        <a class="leader-card reveal" href="https://www.roblox.com/users/2383410516/profile" target="_blank" rel="noreferrer">
-          <div class="leader-number">02</div><div class="leader-avatar">S</div><div class="leader-copy"><small>CO-FOUNDER</small><h3>ShadowflyplayzYT</h3><p>Co-Founder & Imperial Command</p></div><span class="leader-arrow">↗</span>
-        </a>
-      </div>
-    </section>
-
-    <section class="section faq" id="faq">
-      <div class="section-head reveal"><div><div class="section-kicker">04 // ARCHIVES</div><h2>Frequently asked <span>questions.</span></h2></div></div>
-      <div class="faq-list reveal">
-        <details><summary><span>01</span>How do I join The Galactic Empire?<i>+</i></summary><p>Join the Roblox group and Discord community using the buttons across the website. From there, follow the recruitment and verification instructions provided by command staff.</p></details>
-        <details><summary><span>02</span>Do I need experience to join?<i>+</i></summary><p>No. New members can learn through trainings, events, and guidance from division leadership. Activity, discipline, and willingness to improve matter most.</p></details>
-        <details><summary><span>03</span>How do I join a division?<i>+</i></summary><p>Division entry requirements vary. Some divisions may use applications, tryouts, academies, or rank requirements. Check the Discord for current recruitment information.</p></details>
-        <details><summary><span>04</span>Can I join more than one division?<i>+</i></summary><p>This depends on current Imperial policy and the requirements of each division. Always follow the latest rules published by High Command.</p></details>
-        <details><summary><span>05</span>What happens at events?<i>+</i></summary><p>Events can include trainings, patrols, raids, deployments, ceremonies, simulations, inspections, and large-scale roleplay operations.</p></details>
-      </div>
-    </section>
-
-    <section class="section tge-support-section" id="support">
-      <div class="section-head reveal"><div><div class="section-kicker">05 // IMPERIAL SUPPORT DIRECTORATE</div><h2>Your voice.<br><span>Our priority.</span></h2></div><p>Guidance. Opportunity. A fair review.</p></div>
-      <p class="tge-support-intro reveal">Every member deserves a place to be heard. Open a private ticket, share relevant evidence, and follow the conversation with the right team.</p>
-      <div class="tge-support-grid">
-        <a class="tge-support-card reveal" href="support.html?category=careers"><span>01 / RECRUITMENT</span><h3>Careers</h3><p>Staff applications, officer opportunities, and division leadership enquiries.</p><b>FIND YOUR PLACE <i>↗</i></b></a>
-        <a class="tge-support-card reveal" href="support.html?category=reports"><span>02 / COMMUNITY STANDARDS</span><h3>Staff &amp; Member reports</h3><p>Raise a concern about misconduct or abuse of authority with authorized investigators.</p><b>SUBMIT A REPORT <i>↗</i></b></a>
-        <a class="tge-support-card reveal" href="support.html?category=general"><span>03 / MEMBER ASSISTANCE</span><h3>General Support</h3><p>Get help with game issues, ranks, progression, or community questions.</p><b>GET SUPPORT <i>↗</i></b></a>
-        <a class="tge-support-card reveal" href="support.html?category=appeals"><span>04 / DECISION REVIEW</span><h3>Appeals</h3><p>Request a considered review of a ban, blacklist, warning, demotion, or other sanction.</p><b>REQUEST A REVIEW <i>↗</i></b></a>
-      </div>
-      <div class="tge-support-actions reveal"><a class="btn btn-primary" href="support.html"><span>Open Support Center</span><i>↗</i></a><a class="btn btn-ghost" href="support.html?view=track"><span>Track a ticket</span><i>→</i></a></div>
-      <p class="tge-support-note reveal">Private conversations · Ticket updates · Category-specific reviewers<br>Save your ticket receipt to check replies. Volunteer staff; no guaranteed response time.</p>
-    </section>
-
-    <section class="section final-cta reveal">
-      <div class="final-line"></div>
-      <div class="final-copy"><div class="section-kicker">TRANSMISSION READY</div><h2>The Empire is <span>waiting.</span></h2><p>Your path through the Galactic Empire starts with one decision.</p></div>
-      <div class="final-actions"><a class="btn btn-primary roblox-link" href="#" target="_blank" rel="noreferrer"><span>Join on Roblox</span><i>↗</i></a><a class="btn btn-ghost discord-link" href="#" target="_blank" rel="noreferrer"><span>Open Discord</span><i>↗</i></a></div>
-    </section>
+    <section class="join-section section-bordered" aria-labelledby="join-title"><div class="container join-inner"><div><p class="eyebrow">YOUR NEXT CHAPTER</p><h2 id="join-title">The Empire is waiting.</h2><p>Find your people. Choose your path. Make your mark.</p></div><div class="join-actions"><a class="button button-primary" href="https://www.roblox.com/communities/320324404/TGE-The-GaIactic-Emp-re#!/about" target="_blank" rel="noopener noreferrer">Join on Roblox <span aria-hidden="true">↗</span></a><a class="button button-outline" href="https://discord.gg/esWScG4bxZ" target="_blank" rel="noopener noreferrer">Join Discord <span aria-hidden="true">↗</span></a></div></div></section>
   </main>
-
-  <footer>
-    <div class="footer-brand"><span class="brand-mark">TGE</span><div><b>THE GALACTIC EMPIRE</b><small>ROBLOX ROLEPLAY</small></div></div>
-    <p>Fan-made Roblox roleplay community. Not affiliated with Lucasfilm, Disney, or Roblox Corporation.</p>
-    <a href="#top">BACK TO TOP ↑</a>
+  <footer class="site-footer section-bordered">
+    <div class="container"><div class="footer-grid">
+      <div class="footer-about"><a class="brand" href="#home"><span class="brand-mark" aria-hidden="true">TGE<span></span></span><span class="brand-name">The Galactic Empire</span></a><p>A Roblox roleplay community.<br>Built on order, strength, and loyalty.</p><span class="footer-tag"><span class="status-dot" aria-hidden="true"></span> FAN-MADE. COMMUNITY-DRIVEN.</span></div>
+      <div class="footer-links"><h2>Community</h2><a href="#about">About us</a><a href="#divisions">Divisions</a><a href="#leadership">Leadership</a><a href="https://discord.gg/esWScG4bxZ" target="_blank" rel="noopener noreferrer">Discord <span aria-hidden="true">↗</span></a></div>
+      <div class="footer-links"><h2>On Roblox</h2><a href="https://www.roblox.com/communities/320324404/TGE-The-GaIactic-Emp-re#!/about" target="_blank" rel="noopener noreferrer">Official group <span aria-hidden="true">↗</span></a><a href="https://www.roblox.com/games/81256905377127/The-Galactic-Empire-Hub" target="_blank" rel="noopener noreferrer">Experience hub <span aria-hidden="true">↗</span></a><a href="https://www.roblox.com/games/92620503482307/TGE-Development" target="_blank" rel="noopener noreferrer">Development game <span aria-hidden="true">↗</span></a></div>
+      <div class="footer-links"><h2>Support &amp; resources</h2><a href="support.html">Support Center</a><a href="support.html?view=track">Track a ticket</a><a href="support.html?category=careers">Careers</a><a href="#faq">Member guide</a></div>
+    </div><div class="footer-bottom"><p>© <span id="year">2026</span> The Galactic Empire. Fan-made community; not affiliated with Lucasfilm, Disney, or Roblox Corporation.</p><a href="#top">Back to top <span aria-hidden="true">↑</span></a></div></div>
   </footer>
-
-  <script src="script.js"></script>
+  <dialog class="search-dialog" id="site-search" aria-labelledby="search-title">
+    <div class="search-top"><h2 id="search-title">Search the Empire</h2><button class="search-close" type="button" aria-label="Close search">×</button></div>
+    <label class="sr-only" for="search-input">Search pages, divisions, and support</label>
+    <div class="search-field"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m13 13 4 4"/></svg><input type="search" id="search-input" placeholder="Search pages, divisions, support…" autocomplete="off" spellcheck="false"></div>
+    <p class="sr-only" id="search-status" role="status" aria-live="polite"></p><div class="search-results" id="search-results" aria-label="Search results"></div><div class="search-footer"><span>↑ ↓ Navigate <span aria-hidden="true">·</span> Enter Open</span><span><kbd>Esc</kbd> Close</span></div>
+  </dialog>
 </body>
 </html>
